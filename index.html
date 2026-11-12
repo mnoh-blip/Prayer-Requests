@@ -1,2208 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olivet Scheduler</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        :root {
-           --primary-red: #c0392b;
-            --dark-red: #962d22;
-            --light-red: #fadbd8;
-            --bg-white: #ffffff;
-            --off-white: #f7f7f7;
-            --border-color: #e0e0e0;
-            --text-color: #2c3e50;
-            --card-bg: #ffffff;
-            
-            --note-yellow: #fff9c4;
-            --note-yellow-border: #fbc02d;
-            --note-blue: #e1f5fe;
-            --note-blue-border: #03a9f4;
-            --note-pink: #fce4ec;
-            --note-pink-border: #f06292;
-            --note-green: #e8f5e9;
-            --note-green-border: #66bb6a;
-            
-            --girls-pink: #e91e63;
-            --girls-pink-bg: #fce4ec;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Olivet Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary-red:#c0392b;--dark-red:#962d22;--light-red:#fadbd8;--bg-white:#ffffff;--off-white:#f7f7f7;
+  --border-color:#e0e0e0;--text-color:#2c3e50;--card-bg:#ffffff;--bg-body-red:#f3e6e2;
+  --note-yellow:#fff9c4;--note-yellow-border:#fbc02d;--note-blue:#e1f5fe;--note-blue-border:#03a9f4;
+  --note-pink:#fce4ec;--note-pink-border:#f06292;--note-green:#e8f5e9;--note-green-border:#66bb6a;
+  --girls-pink:#e91e63;--girls-pink-bg:#fce4ec;--px:'Pixelify Sans','Segoe UI',Tahoma,sans-serif;
+}
+body.dark-mode{
+  --bg-body-red:#1a0303;--bg-white:#1e1e1e;--off-white:#2a0a0a;--border-color:#5c1d1d;--text-color:#f2d7d5;
+  --card-bg:#260d0d;--light-red:#4a1510;--primary-red:#c0392b;--dark-red:#e74c3c;
+  --note-yellow:#333018;--note-blue:#152935;--note-pink:#351822;--note-green:#18301b;--girls-pink-bg:#3d1424;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg-body-red);color:var(--text-color)}
+.hidden{display:none!important}
+.admin-only{display:none!important}
+body.is-admin .admin-only{display:flex!important}
+body.is-admin button.admin-only,body.is-admin span.admin-only{display:inline-flex!important}
 
-        body.dark-mode {
-            --bg-body-red: #1a0303;
-            --bg-white: #1e1e1e;
-            --off-white: #2a0a0a;
-            --border-color: #5c1d1d;
-            --text-color: #f2d7d5;
-            --card-bg: #260d0d;
-            --light-red: #4a1510;
-            --primary-red: #c0392b;
-            --dark-red: #e74c3c;
-            
-            --note-yellow: #333018;
-            --note-blue: #152935;
-            --note-pink: #351822;
-            --note-green: #18301b;
-            --girls-pink-bg: #3d1424;
-        }
+/* Title screen */
+#titleScreen{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:#7ec8f0}
+body:not(.is-logged-in) #titleScreen{display:flex}
+body:not(.is-logged-in) #gameRoot,body:not(.is-logged-in) #classicView{display:none!important}
+#titleCanvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.title-card{position:relative;z-index:2;background:rgba(40,12,10,.86);border:4px solid #f1c40f;box-shadow:0 0 0 4px #c0392b,8px 8px 0 4px rgba(0,0,0,.35);padding:38px 34px;border-radius:6px;color:#fff;text-align:center;max-width:430px;width:92%;display:flex;flex-direction:column;gap:20px;align-items:center}
+.title-card h1{font-family:var(--px);font-size:2.4rem;letter-spacing:2px;color:#ffe9a8;text-shadow:3px 3px 0 #c0392b}
+.title-card p{font-family:var(--px);opacity:.9;font-size:1.05rem}
+.title-btn{font-family:var(--px);background:#fff;color:#78281f;border:none;padding:13px 26px;border-radius:4px;font-size:1.15rem;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;box-shadow:0 4px 0 #b9b2a4;transition:transform .1s}
+.title-btn:hover{transform:translateY(-2px)}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg-body-red); color: var(--text-color); padding: 20px; transition: background-color 0.3s, color 0.3s; overflow-x: hidden; }
+/* Game root */
+#gameRoot{position:fixed;inset:0;background:#0d0d1a;font-family:var(--px)}
+#gameRoot *{font-family:var(--px)}
+#gameCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}
+.px-panel{background:var(--card-bg);color:var(--text-color);border:3px solid #2a1210;box-shadow:0 0 0 3px var(--primary-red),4px 4px 0 3px rgba(0,0,0,.35);border-radius:4px}
+.hud{position:absolute;z-index:10}
+#hudTL{top:12px;left:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;min-width:210px}
+#hudAvatar{width:40px;height:50px;image-rendering:pixelated;background:var(--light-red);border:2px solid var(--primary-red);border-radius:3px}
+.hud-name{font-weight:700;font-size:1rem;display:flex;gap:6px;align-items:center}
+.admin-badge{background:#f1c40f;color:#000;font-size:.65rem;padding:1px 6px;border-radius:6px;font-weight:700}
+.hud-sub{font-size:.82rem;opacity:.9;margin-top:2px}
+.bar{position:relative;height:11px;background:#2a1a18;border:2px solid #000;margin-top:3px;border-radius:2px;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:100%;transition:width .2s}
+.bar.hp i{background:linear-gradient(#ff6b6b,#c0392b)}.bar.mp i{background:linear-gradient(#6bb5ff,#2f7fd6)}
+.bar span{position:absolute;inset:0;font-size:.62rem;color:#fff;text-align:center;line-height:9px;text-shadow:1px 1px 0 #000}
+#roomBanner{top:14px;left:50%;transform:translateX(-50%);padding:6px 20px;font-size:1.2rem;font-weight:700;opacity:0;transition:opacity .5s;pointer-events:none;color:#fff;background:rgba(40,12,10,.85);border:3px solid #f1c40f;border-radius:4px}
+#roomBanner.show{opacity:1}
+#announceBar{top:56px;left:50%;transform:translateX(-50%);max-width:min(560px,60vw);padding:5px 14px;font-size:.9rem;background:rgba(241,196,15,.95);color:#3a2a00;border:3px solid #7a5a00;border-radius:4px}
+#hudBtns{top:12px;right:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:min(420px,55vw)}
+.hbtn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--card-bg);color:var(--primary-red);border:3px solid #2a1210;box-shadow:0 0 0 2px var(--primary-red),2px 3px 0 2px rgba(0,0,0,.35);border-radius:4px;cursor:pointer;font-size:1rem}
+.hbtn:hover{background:var(--primary-red);color:#fff}
+#chatBox{bottom:12px;left:12px;width:min(380px,calc(100vw - 24px));display:flex;flex-direction:column;gap:6px}
+#chatLog{max-height:150px;overflow-y:auto;background:rgba(20,8,6,.62);border:2px solid rgba(255,255,255,.2);border-radius:4px;padding:5px 8px;font-size:.82rem;color:#fff;display:flex;flex-direction:column;gap:2px}
+#chatLog b{color:#ffd9a0}#chatLog b.adm{color:#ffd400}#chatLog .rm{opacity:.55;font-size:.7rem}
+#chatForm{display:flex;gap:4px}
+#chatInput{flex:1;padding:7px 10px;border:3px solid #2a1210;border-radius:4px;font-size:.9rem;background:#fffdf5;color:#222;font-family:var(--px)}
+#chatForm button{padding:0 12px;border:3px solid #2a1210;background:var(--primary-red);color:#fff;border-radius:4px;cursor:pointer;font-weight:700}
+#emoteBar{bottom:12px;right:12px;display:flex;gap:6px}
+#emoteBar button{width:40px;height:40px;font-size:1.3rem;background:var(--card-bg);border:3px solid #2a1210;border-radius:4px;cursor:pointer;box-shadow:0 0 0 2px var(--primary-red)}
+#emoteBar button:hover{transform:translateY(-2px)}
+#prompt{bottom:84px;left:50%;transform:translateX(-50%);padding:6px 16px;background:rgba(20,8,6,.88);color:#fff;border:3px solid #f1c40f;border-radius:4px;font-size:1rem;pointer-events:none;white-space:nowrap}
+#buildBar{bottom:64px;left:50%;transform:translateX(-50%);max-width:96vw;padding:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.bitem{padding:4px 8px;font-size:.8rem;border:2px solid var(--primary-red);border-radius:3px;background:var(--off-white);color:var(--text-color);cursor:pointer;text-align:center}
+.bitem.sel{background:var(--primary-red);color:#fff}
+#dialog{bottom:90px;left:50%;transform:translateX(-50%);width:min(620px,94vw);padding:14px 18px;z-index:25}
+#dlgName{font-weight:700;color:var(--primary-red);margin-bottom:6px;font-size:1.05rem}
+#dlgText{font-size:1.02rem;line-height:1.45;min-height:44px;white-space:pre-wrap}
+#dlgChoices{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:flex-end}
+.btn{background-color:var(--primary-red);color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;transition:background .2s}
+.btn:hover{background-color:var(--dark-red)}
+.btn-danger{background-color:#e74c3c;padding:2px 6px;font-size:.8rem}
+.btn-danger:hover{background-color:#c0392b}
+.btn-alt{background:#16a085}.btn-alt:hover{background:#11806a}
+.btn-gray{background:#7f8c8d}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .22s;z-index:60}
+#fade.on{opacity:1;pointer-events:auto}
+#toasts{position:fixed;top:70px;right:14px;z-index:70;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
+.toast{background:rgba(20,8,6,.92);color:#fff;border:3px solid #f1c40f;padding:7px 14px;border-radius:4px;font-family:var(--px);font-size:.95rem;animation:tin .25s}
+.toast.bad{border-color:#e74c3c}.toast.good{border-color:#2ecc71}
+@keyframes tin{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+#touch{position:absolute;bottom:90px;left:14px;display:none;z-index:12}
+body.is-touch #touch{display:block}
+.dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:4px}
+.dpad button{background:rgba(255,255,255,.35);border:2px solid #2a1210;border-radius:8px;font-size:1.2rem;touch-action:none}
+#touchA{position:fixed;right:14px;bottom:100px;display:none}
+body.is-touch #touchA{display:block}
+#touchA button{width:62px;height:62px;border-radius:50%;background:rgba(192,57,43,.8);color:#fff;font-weight:700;border:3px solid #2a1210;font-size:1.2rem}
 
-        /* Guest View Control */
-        body:not(.is-logged-in) .main-app-content,
-        body:not(.is-logged-in) #logPanel {
-            display: none !important;
-        }
+/* Modal */
+.modal{position:fixed;inset:0;z-index:30;background:rgba(10,3,3,.62);display:flex;align-items:center;justify-content:center;padding:14px}
+.modal-win{width:min(1100px,100%);max-height:92vh;display:flex;flex-direction:column;background:var(--bg-white)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--primary-red);color:#fff}
+.modal-head h3{font-family:var(--px);font-size:1.2rem;display:flex;gap:10px;align-items:center}
+.modal-x{background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.5);color:#fff;border-radius:4px;width:32px;height:32px;cursor:pointer;font-size:1rem}
+#panelBody{overflow:auto;padding:14px;flex:1}
+.modal-win .card>h2{display:none}
+.modal-win .card{border-top:none;box-shadow:none;padding:4px}
 
-        .guest-login-overlay {
-            display: none;
-            min-height: 80vh;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        body:not(.is-logged-in) .guest-login-overlay {
-            display: flex;
-        }
-
-        .guest-login-card {
-            background: linear-gradient(135deg, #c0392b 0%, #78281f 100%);
-            padding: 50px 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            max-width: 450px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .guest-login-card h1 {
-            font-size: 2.2rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-        }
-
-        .guest-login-btn {
-            background: #ffffff;
-            color: #78281f;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.2s ease;
-        }
-
-        .guest-login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            background: #fcedec;
-        }
-        
-        header { 
-            background: linear-gradient(135deg, #c0392b 0%, #78281f 100%); 
-            color: white; 
-            text-align: center; 
-            padding: 25px 20px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 15px; 
-            position: relative; 
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        header h1 { font-size: 2.2rem; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); }
-
-        .header-controls { position: absolute; right: 20px; display: flex; align-items: center; gap: 10px; }
-
-        .theme-toggle-btn, .login-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
-        .theme-toggle-btn:hover, .login-btn:hover { background: rgba(255,255,255,0.35); }
-
-        .user-profile-badge { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; background: rgba(0,0,0,0.3); padding: 5px 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
-
-        .admin-badge { background-color: #f1c40f; color: #7f8c8d; font-size: 0.7rem; padding: 2px 6px; border-radius: 8px; font-weight: bold; margin-left: 4px; text-transform: uppercase; color: #000; }
-
-        .bible-banner { background: var(--card-bg); border: 1px solid var(--border-color); border-left: 5px solid #e74c3c; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        .bible-banner i { color: #e74c3c; font-size: 1.4rem; }
-        .bible-text { font-style: italic; font-size: 0.95rem; }
-        .bible-ref { font-weight: bold; font-style: normal; margin-left: 8px; color: var(--primary-red); }
-
-        .quick-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        .nav-row { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .nav-row-divider { height: 1px; background-color: var(--border-color); margin: 2px 0; }
-        .nav-item { display: flex; align-items: center; gap: 8px; background-color: var(--light-red); border: 1px solid var(--border-color); color: var(--primary-red); padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: all 0.2s ease; cursor: pointer; }
-        .nav-item i { font-size: 1rem; }
-        .nav-item:hover { background-color: var(--primary-red); color: white; transform: translateY(-2px); }
-        .nav-row-actions .nav-item { padding: 5px 12px; font-size: 0.8rem; gap: 6px; font-weight: 600; }
-        .nav-row-actions .nav-item i { font-size: 0.85rem; }
-        .nav-item.nav-action { background-color: #e8f8f5; border-color: #a3e4d7; color: #16a085; }
-        body.dark-mode .nav-item.nav-action { background-color: #113831; border-color: #16a085; color: #a3e4d7; }
-        .nav-item.nav-action:hover { background-color: #16a085; color: white; }
-        .nav-item.nav-danger, .nav-item.nav-undo { background-color: #fadbd8; border-color: #f5b7b1; color: #c0392b; }
-        body.dark-mode .nav-item.nav-danger, body.dark-mode .nav-item.nav-undo { background-color: #4a1510; border-color: #962d22; color: #ff6b6b; }
-        .nav-item.nav-danger:hover, .nav-item.nav-undo:hover { background-color: #c0392b; color: white; }
-
-        /* Admin only helper */
-        .admin-only { display: none !important; }
-        body.is-admin .admin-only { display: flex !important; }
-        body.is-admin button.admin-only, body.is-admin span.admin-only { display: inline-flex !important; }
-
-        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-top: 5px solid var(--primary-red); border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .card h2 { color: var(--primary-red); margin-bottom: 15px; font-size: 1.5rem; border-bottom: 2px solid var(--light-red); padding-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        .grid-7 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-
-        label { font-size: 0.8rem; font-weight: bold; color: var(--primary-red); display: block; margin-top: 6px; }
-        select { width: 100%; padding: 6px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem; margin-top: 2px; background: var(--bg-white); color: var(--text-color); }
-
-        .auto-expand { width: 100%; min-height: 42px; resize: none; overflow: hidden; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.88rem; line-height: 1.4; padding: 6px 8px; margin-top: 2px; background: transparent; color: var(--text-color); box-sizing: border-box; transition: border-color 0.2s, background-color 0.2s; display: block; }
-        .auto-expand:focus { outline: none; border-color: var(--primary-red); background-color: rgba(192, 57, 43, 0.05); }
-
-        .sticky-note { position: relative; padding: 15px 12px 12px 12px; border-radius: 2px 2px 12px 2px; box-shadow: 2px 4px 10px rgba(0,0,0,0.12), 0 0 2px rgba(0,0,0,0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; margin-bottom: 10px; }
-        .sticky-note:hover { transform: translateY(-2px) rotate(-0.5deg); box-shadow: 4px 8px 15px rgba(0,0,0,0.15); }
-        .sticky-note::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; background: rgba(192, 57, 43, 0.8); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .sticky-note h3, .sticky-note h4 { font-size: 1rem; font-weight: bold; text-align: center; margin-bottom: 8px; padding-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .sticky-yellow { background-color: var(--note-yellow); border-left: 4px solid var(--note-yellow-border); }
-        .sticky-yellow h3, .sticky-yellow h4 { color: #f57f17; border-bottom: 1px solid rgba(245, 127, 23, 0.3); }
-        .sticky-blue { background-color: var(--note-blue); border-left: 4px solid var(--note-blue-border); }
-        .sticky-blue h3, .sticky-blue h4 { color: #0277bd; border-bottom: 1px solid rgba(2, 119, 189, 0.3); }
-        .sticky-pink { background-color: var(--note-pink); border-left: 4px solid var(--note-pink-border); }
-        .sticky-pink h3, .sticky-pink h4 { color: #c2185b; border-bottom: 1px solid rgba(194, 24, 91, 0.3); }
-        .sticky-green { background-color: var(--note-green); border-left: 4px solid var(--note-green-border); }
-        .sticky-green h3, .sticky-green h4 { color: #2e7d32; border-bottom: 1px solid rgba(46, 125, 50, 0.3); }
-        .sticky-note textarea.auto-expand { border: none; border-radius: 0; padding: 4px 2px; font-size: 0.9rem; }
-
-        .meal-table-wrapper { overflow-x: auto; }
-        .meal-table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        .meal-table th, .meal-table td { border: 1px solid var(--border-color); padding: 0; vertical-align: top; position: relative; }
-        .meal-table th { background-color: var(--light-red); color: var(--primary-red); text-align: center; font-size: 0.95rem; padding: 8px 6px; }
-        .meal-table td.meal-type-header { background-color: var(--light-red); color: var(--primary-red); font-weight: bold; text-align: center; vertical-align: middle; width: 100px; padding: 6px; }
-        .meal-cell-container { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
-
-        .sticker-bar { display: flex; justify-content: space-around; align-items: center; padding: 3px; background: rgba(0,0,0,0.03); border-top: 1px dashed var(--border-color); }
-        body.dark-mode .sticker-bar { background: rgba(255,255,255,0.03); }
-        .sticker-btn { background: transparent; border: 1px solid transparent; cursor: pointer; padding: 2px 4px; font-size: 0.78rem; display: flex; align-items: center; gap: 2px; border-radius: 10px; transition: all 0.15s ease; user-select: none; }
-        .sticker-btn:hover { background: rgba(0,0,0,0.08); transform: scale(1.1); }
-        body.dark-mode .sticker-btn:hover { background: rgba(255,255,255,0.12); }
-        .sticker-btn.selected { background: var(--light-red); border-color: var(--primary-red); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        body.dark-mode .sticker-btn.selected { background: var(--light-red); border-color: var(--primary-red); color: #ffffff; }
-        .sticker-btn .emoji { font-size: 0.95rem; }
-
-        .btn { background-color: var(--primary-red); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .btn:hover { background-color: var(--dark-red); }
-
-        .btn-swap { background-color: var(--primary-red); color: white; border: 1px solid transparent; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
-        .btn-swap:hover { background-color: var(--dark-red); }
-        .btn-swap.selected { background-color: #e74c3c; color: #ffffff; box-shadow: 0 0 10px rgba(192, 57, 43, 0.8); border: 1px solid #962d22; transform: scale(1.15); }
-
-        .btn-danger { background-color: #e74c3c; padding: 2px 6px; font-size: 0.8rem; }
-        .btn-danger:hover { background-color: #c0392b; }
-
-        .table-custom { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .table-custom th, .table-custom td { border: 1px solid var(--border-color); padding: 0; text-align: left; vertical-align: middle; }
-        .table-custom th { background-color: var(--light-red); color: var(--primary-red); padding: 8px 6px; }
-        .table-custom textarea.auto-expand, .meal-table textarea.auto-expand { border: none; border-radius: 0; background: transparent; margin: 0; padding: 8px; width: 100%; min-height: 42px; box-shadow: none; display: block; }
-
-        textarea.auto-expand.tag-math { background-color: rgba(231, 76, 60, 0.25) !important; }
-        textarea.auto-expand.tag-science { background-color: rgba(230, 126, 34, 0.25) !important; }
-        textarea.auto-expand.tag-english { background-color: rgba(241, 196, 15, 0.3) !important; }
-        textarea.auto-expand.tag-history { background-color: rgba(46, 204, 113, 0.25) !important; }
-        textarea.auto-expand.tag-pe { background-color: rgba(52, 152, 219, 0.25) !important; }
-        textarea.auto-expand.tag-art { background-color: rgba(63, 81, 181, 0.25) !important; }
-        textarea.auto-expand.tag-chapel { background-color: rgba(155, 89, 182, 0.25) !important; }
-        textarea.auto-expand.tag-elective { background-color: rgba(149, 165, 166, 0.3) !important; }
-
-        .girls-header { color: var(--girls-pink) !important; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        #girlsDormTable th { background-color: var(--girls-pink-bg); color: var(--dark-red); }
-
-        .grade-selector { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .grade-selector select { width: 150px; }
-
-        .schedule-container { display: flex; gap: 20px; flex-wrap: wrap; }
-        .schedule-main { flex: 2; min-width: 320px; }
-        .schedule-side { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 15px; }
-
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .calendar-day-head { font-weight: bold; background: var(--light-red); color: var(--primary-red); padding: 5px 0; }
-        .calendar-day { border: 1px solid var(--border-color); min-height: 80px; padding: 5px; text-align: left; background: var(--card-bg); vertical-align: top; }
-        .calendar-day .date-num { font-weight: bold; font-size: 0.8rem; color: var(--primary-red); margin-bottom: 4px; }
-
-        /* Activity Log Side Panel */
-        .log-panel {
-            position: fixed; top: 0; right: -360px; width: 350px; height: 100vh;
-            background: var(--card-bg); border-left: 2px solid var(--primary-red);
-            box-shadow: -5px 0 20px rgba(0,0,0,0.2); z-index: 9999;
-            transition: right 0.3s ease-in-out; display: flex; flex-direction: column;
-        }
-        .log-panel.open { right: 0; }
-        .log-toggle-btn {
-            position: absolute; top: 50%; left: -36px; transform: translateY(-50%);
-            width: 36px; height: 50px; background: var(--primary-red); color: white;
-            border: none; border-radius: 8px 0 0 8px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; box-shadow: -3px 0 8px rgba(0,0,0,0.15);
-        }
-        .log-header {
-            padding: 18px; background: var(--primary-red); color: white;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .log-header h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-        .log-body {
-            flex: 1; padding: 15px; overflow-y: auto; display: flex;
-            flex-direction: column; gap: 10px; font-size: 0.85rem;
-        }
-        .log-item {
-            background: var(--off-white); border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary-red); border-radius: 4px;
-            padding: 8px 10px; line-height: 1.4;
-        }
-        .log-item .log-user { font-weight: bold; color: var(--primary-red); }
-        .log-item .log-time { font-size: 0.72rem; opacity: 0.6; margin-top: 4px; display: block; }
-        .log-footer { padding: 10px 15px; border-top: 1px solid var(--border-color); text-align: right; }
-
-        /* Tutorial Overlay */
-        .tutorial-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; display: none; pointer-events: auto; }
-        .tutorial-spotlight { position: fixed; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7); border-radius: 8px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; z-index: 1000000; }
-        .tutorial-popover { position: fixed; background: var(--card-bg, #ffffff); color: var(--text-color, #333333); padding: 18px 22px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); width: 340px; z-index: 1000001; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 2px solid var(--primary-red, #c0392b); }
-        .tutorial-popover h4 { margin-bottom: 8px; color: var(--primary-red, #c0392b); font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-        .tutorial-popover p { font-size: 0.88rem; line-height: 1.5; margin-bottom: 16px; }
-        .tutorial-input-group { display: flex; gap: 6px; margin-top: 10px; margin-bottom: 12px; }
-        .tutorial-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--bg-white); color: var(--text-color); }
-        .tutorial-input:focus { outline: none; border-color: var(--primary-red); }
-        .tutorial-controls { display: flex; justify-content: space-between; align-items: center; }
-        .tutorial-steps-count { font-size: 0.8rem; font-weight: bold; opacity: 0.7; }
-        .tutorial-btns { display: flex; gap: 8px; }
-        .tutorial-btn { padding: 6px 14px; border-radius: 6px; border: none; font-size: 0.85rem; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .tutorial-btn-next { background-color: var(--primary-red, #c0392b); color: white; }
-        .tutorial-btn-next:hover { background-color: var(--dark-red, #962d22); }
-        .tutorial-btn-skip { background-color: transparent; color: var(--text-color); border: 1px solid var(--border-color); }
-    </style>
+/* Cards (original website features) */
+.card{background:var(--card-bg);border:1px solid var(--border-color);border-top:5px solid var(--primary-red);border-radius:8px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,.15);margin-bottom:22px}
+.card h2{color:var(--primary-red);margin-bottom:15px;font-size:1.5rem;border-bottom:2px solid var(--light-red);padding-bottom:8px;display:flex;align-items:center;gap:10px}
+.grid-7{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+label{font-size:.8rem;font-weight:bold;color:var(--primary-red);display:block;margin-top:6px}
+select,input[type=text]{width:100%;padding:6px 8px;border:1px solid var(--border-color);border-radius:4px;font-size:.9rem;margin-top:2px;background:var(--bg-white);color:var(--text-color)}
+.auto-expand{width:100%;min-height:42px;resize:none;overflow:hidden;border:1px solid var(--border-color);border-radius:4px;font-size:.88rem;line-height:1.4;padding:6px 8px;margin-top:2px;background:transparent;color:var(--text-color);display:block}
+.auto-expand:focus{outline:none;border-color:var(--primary-red);background-color:rgba(192,57,43,.05)}
+.sticky-note{position:relative;padding:15px 12px 12px;border-radius:2px 2px 12px 2px;box-shadow:2px 4px 10px rgba(0,0,0,.12);margin-bottom:10px}
+.sticky-note::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:12px;height:12px;background:rgba(192,57,43,.8);border-radius:50%}
+.sticky-note h3,.sticky-note h4{font-size:1rem;font-weight:bold;text-align:center;margin-bottom:8px;padding-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+.sticky-yellow{background:var(--note-yellow);border-left:4px solid var(--note-yellow-border)}.sticky-yellow h3,.sticky-yellow h4{color:#f57f17}
+.sticky-blue{background:var(--note-blue);border-left:4px solid var(--note-blue-border)}.sticky-blue h3,.sticky-blue h4{color:#0277bd}
+.sticky-pink{background:var(--note-pink);border-left:4px solid var(--note-pink-border)}.sticky-pink h3,.sticky-pink h4{color:#c2185b}
+.sticky-green{background:var(--note-green);border-left:4px solid var(--note-green-border)}.sticky-green h3,.sticky-green h4{color:#2e7d32}
+.sticky-note textarea.auto-expand{border:none;border-radius:0;padding:4px 2px;font-size:.9rem}
+.meal-table-wrapper{overflow-x:auto}
+.meal-table{width:100%;border-collapse:collapse;min-width:800px}
+.meal-table th,.meal-table td{border:1px solid var(--border-color);padding:0;vertical-align:top}
+.meal-table th{background:var(--light-red);color:var(--primary-red);text-align:center;font-size:.95rem;padding:8px 6px}
+.meal-table td.meal-type-header{background:var(--light-red);color:var(--primary-red);font-weight:bold;text-align:center;vertical-align:middle;width:100px;padding:6px}
+.meal-cell-container{display:flex;flex-direction:column;height:100%;justify-content:space-between}
+.sticker-bar{display:flex;justify-content:space-around;align-items:center;padding:3px;background:rgba(0,0,0,.03);border-top:1px dashed var(--border-color)}
+.sticker-btn{background:transparent;border:1px solid transparent;cursor:pointer;padding:2px 4px;font-size:.78rem;display:flex;align-items:center;gap:2px;border-radius:10px;color:var(--text-color)}
+.sticker-btn:hover{background:rgba(0,0,0,.08);transform:scale(1.1)}
+.sticker-btn.selected{background:var(--light-red);border-color:var(--primary-red);font-weight:bold}
+.sticker-btn .emoji{font-size:.95rem}
+.btn-swap{background:var(--primary-red);color:#fff;border:1px solid transparent;padding:6px 8px;border-radius:4px;cursor:pointer;font-size:.85rem}
+.btn-swap.selected{background:#e74c3c;box-shadow:0 0 10px rgba(192,57,43,.8);transform:scale(1.15)}
+.table-custom{width:100%;border-collapse:collapse;margin-top:10px}
+.table-custom th,.table-custom td{border:1px solid var(--border-color);padding:0;text-align:left;vertical-align:middle}
+.table-custom th{background:var(--light-red);color:var(--primary-red);padding:8px 6px}
+.table-custom textarea.auto-expand,.meal-table textarea.auto-expand{border:none;border-radius:0;background:transparent;margin:0;padding:8px}
+textarea.auto-expand.tag-math{background-color:rgba(231,76,60,.25)!important}
+textarea.auto-expand.tag-science{background-color:rgba(230,126,34,.25)!important}
+textarea.auto-expand.tag-english{background-color:rgba(241,196,15,.3)!important}
+textarea.auto-expand.tag-history{background-color:rgba(46,204,113,.25)!important}
+textarea.auto-expand.tag-pe{background-color:rgba(52,152,219,.25)!important}
+textarea.auto-expand.tag-art{background-color:rgba(63,81,181,.25)!important}
+textarea.auto-expand.tag-chapel{background-color:rgba(155,89,182,.25)!important}
+textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!important}
+.girls-header{color:var(--girls-pink)!important;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#girlsDormTable th{background:var(--girls-pink-bg);color:var(--dark-red)}
+.grade-selector{margin-bottom:15px;display:flex;align-items:center;gap:10px}.grade-selector select{width:150px}
+.schedule-container{display:flex;gap:20px;flex-wrap:wrap}.schedule-main{flex:2;min-width:320px}.schedule-side{flex:1;min-width:260px;display:flex;flex-direction:column;gap:15px}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.calendar-day-head{font-weight:bold;background:var(--light-red);color:var(--primary-red);padding:5px 0}
+.calendar-day{border:1px solid var(--border-color);min-height:80px;padding:5px;text-align:left;background:var(--card-bg)}
+.calendar-day .date-num{font-weight:bold;font-size:.8rem;color:var(--primary-red);margin-bottom:4px}
+.log-item{background:var(--off-white);border:1px solid var(--border-color);border-left:4px solid var(--primary-red);border-radius:4px;padding:8px 10px;line-height:1.4;margin-bottom:8px;font-size:.88rem}
+.log-item .log-user{font-weight:bold;color:var(--primary-red)}.log-item .log-time{font-size:.72rem;opacity:.6;display:block;margin-top:4px}
+.adm-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.today-sec{background:var(--off-white);border:1px solid var(--border-color);border-left:5px solid var(--primary-red);border-radius:5px;padding:10px 12px;margin-bottom:10px}
+.today-sec h4{color:var(--primary-red);margin-bottom:4px}.today-sec div{white-space:pre-wrap;font-size:.92rem}
+.gb-entry{display:flex;gap:10px;padding:8px;border-bottom:1px dashed var(--border-color)}.gb-entry .st{font-size:1.6rem}
+.gb-stamps{display:flex;gap:6px;margin:8px 0}.gb-stamps button{font-size:1.3rem;padding:3px 8px;border:2px solid var(--border-color);background:var(--off-white);border-radius:6px;cursor:pointer}.gb-stamps button.sel{border-color:var(--primary-red);background:var(--light-red)}
+.shop-row{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px dashed var(--border-color)}.shop-row .nm{flex:1}.shop-row small{opacity:.7;display:block}
+.wd{display:flex;gap:18px;flex-wrap:wrap}.wd-prev{text-align:center}.wd-prev canvas{background:linear-gradient(#bfe6ff,#d9f2c8);border:3px solid var(--primary-red);border-radius:6px;image-rendering:pixelated}
+.wd-opts{flex:1;min-width:260px}.wd-row{display:flex;align-items:center;gap:6px;margin:6px 0;flex-wrap:wrap}.wd-row>span{width:84px;font-weight:700;font-size:.85rem;color:var(--primary-red)}
+.sw{width:22px;height:22px;border:2px solid #2a1210;border-radius:4px;cursor:pointer}.sw.sel{outline:3px solid var(--primary-red)}
+.wd-row input[type=color]{width:30px;height:26px;padding:0;border:none;background:none}
+.wd-step{display:flex;gap:6px;align-items:center}.wd-step b{min-width:90px;text-align:center}
+.prof-box{display:flex;gap:16px;align-items:center}.prof-box canvas{background:var(--light-red);border-radius:6px;image-rendering:pixelated}
+.guide-text{font-size:1.02rem;line-height:1.6;min-height:110px}.guide-ctl{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+/* Battle */
+#battle{position:fixed;inset:0;z-index:40;background:linear-gradient(#6fb5e8 0%,#a6dd8c 55%,#5a9a45 100%);display:flex;flex-direction:column;font-family:var(--px)}
+#battle *{font-family:var(--px)}
+.b-field{flex:1;position:relative;min-height:0}
+.b-box{position:absolute;padding:8px 12px;min-width:200px}.b-foe{top:16px;left:16px}.b-me{bottom:16px;right:16px}
+.b-box .nm{font-weight:700}.b-sprite{position:absolute;image-rendering:pixelated}
+#bFoeC{top:12%;right:14%;width:min(190px,32vw)}#bMeC{bottom:8%;left:14%;width:min(150px,28vw)}
+.shake{animation:shk .3s}@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.dmg{position:absolute;font-weight:700;font-size:2rem;color:#fff;text-shadow:2px 2px 0 #c0392b,-2px -2px 0 #c0392b;animation:dmgup .9s forwards;pointer-events:none}
+@keyframes dmgup{to{transform:translateY(-50px);opacity:0}}
+.b-bottom{display:flex;gap:10px;padding:10px;background:#2a1210;border-top:4px solid #f1c40f;flex-wrap:wrap}
+#bLog{flex:1;min-width:240px;min-height:84px;max-height:110px;overflow:auto;color:#fff;font-size:1rem;line-height:1.4;background:rgba(255,255,255,.08);padding:8px;border-radius:4px}
+#bActs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;min-width:260px}
+#bActs button{padding:10px 8px;border:3px solid #000;background:#fff;color:#2a1210;font-weight:700;border-radius:4px;cursor:pointer;font-size:.95rem}
+#bActs button:hover:not(:disabled){background:#ffe9a8}#bActs button:disabled{opacity:.45;cursor:default}
+/* Classic view */
+#classicView{position:fixed;inset:0;z-index:20;background:var(--bg-body-red);overflow:auto;padding:20px}
+.classic-top{max-width:1200px;margin:0 auto 18px;background:linear-gradient(135deg,#c0392b,#78281f);color:#fff;padding:18px 22px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.classic-top h1{font-size:1.8rem}#classicCards{max-width:1200px;margin:0 auto}
+@media print{html,body{overflow:visible;height:auto}#gameRoot,#titleScreen,.modal,#battle,#fade,#toasts{display:none!important}#classicView{position:static!important;display:block!important;overflow:visible}.classic-top button{display:none}}
+</style>
 </head>
 <body>
 
-<!-- Guest Login View -->
-<div class="guest-login-overlay">
-    <div class="guest-login-card">
-        <h1><i class="fa-solid fa-calendar-check"></i> Olivet Scheduler</h1>
-        <button class="guest-login-btn" onclick="handleGoogleLogin()">
-            <i class="fa-brands fa-google"></i> Sign in with Google
-        </button>
-    </div>
+<!-- Title / login -->
+<div id="titleScreen">
+  <canvas id="titleCanvas"></canvas>
+  <div class="title-card">
+    <h1>Olivet Village</h1>
+    <p>A little pixel town for Olivet students.<br>Walk, chat, battle, build!</p>
+    <button class="title-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign in with Google</button>
+  </div>
 </div>
 
-<div class="main-app-content">
-<header>
-    <h1><i class="fa-solid fa-calendar-check" style="font-size: 1.8rem;"></i> Olivet Scheduler</h1>
-    <div class="header-controls">
-        <div id="userBadge" class="user-profile-badge" style="display: none;">
-            <i class="fa-solid fa-circle-user"></i>
-            <span id="userNicknameSpan">Guest</span>
-            <span id="adminBadge" class="admin-badge admin-only">ADMIN</span>
-            <span id="syncStatus" title="Realtime sync status" style="font-size:0.7rem; opacity:0.8;">● Live</span>
-        </div>
-        <button class="login-btn" id="loginBtn" onclick="handleGoogleLogin()">
-            <i class="fa-solid fa-right-to-bracket" id="loginIcon"></i> <span id="loginBtnText">Login</span>
-        </button>
-        <button class="theme-toggle-btn" onclick="toggleDarkMode()">
-            <i class="fa-solid fa-moon" id="themeIcon"></i> <span id="themeText">Dark Mode</span>
-        </button>
-    </div>
-</header>
+<!-- Game -->
+<div id="gameRoot">
+  <canvas id="gameCanvas"></canvas>
 
-<!-- Activity Log Side Panel -->
-<div id="logPanel" class="log-panel">
-    <button class="log-toggle-btn" id="logToggleBtn" onclick="toggleLogPanel()">
-        <i class="fa-solid fa-chevron-left" id="logToggleIcon"></i>
-    </button>
-    <div class="log-header">
-        <h3><i class="fa-solid fa-list-check"></i> Activity Log</h3>
-        <span style="font-size: 0.8rem; opacity: 0.8;">Recent History</span>
+  <div id="hudTL" class="hud px-panel">
+    <canvas id="hudAvatar" width="40" height="50"></canvas>
+    <div style="flex:1">
+      <div class="hud-name"><span id="hudName">Guest</span><span id="adminBadge" class="admin-badge admin-only">ADMIN</span></div>
+      <div class="hud-sub">Lv <b id="hudLv">1</b> &nbsp;🪙 <b id="hudCoins">0</b></div>
+      <div class="bar hp"><i id="hudHp"></i><span id="hudHpT"></span></div>
+      <div class="bar mp"><i id="hudMp"></i><span id="hudMpT"></span></div>
+      <div class="hud-sub"><span id="syncStatus">● Live</span> · <span id="hudRoom">1 here</span></div>
     </div>
-    <div class="log-body" id="logContainer">
-        <!-- Logs -->
+  </div>
+  <div id="roomBanner" class="hud"></div>
+  <div id="announceBar" class="hud hidden"><i class="fa-solid fa-bullhorn"></i> <span id="announceText"></span></div>
+
+  <div id="hudBtns" class="hud">
+    <button class="hbtn" id="btnToday" title="Today's Board"><i class="fa-solid fa-clipboard-list"></i></button>
+    <button class="hbtn" id="btnWardrobe" title="Character"><i class="fa-solid fa-shirt"></i></button>
+    <button class="hbtn" id="btnGuide" title="Tutorial"><i class="fa-solid fa-circle-question"></i></button>
+    <button class="hbtn" id="btnClassic" title="Classic list view"><i class="fa-solid fa-table-list"></i></button>
+    <button class="hbtn" id="btnNight" title="Day / Night"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+    <button class="hbtn" id="btnSound" title="Sound"><i class="fa-solid fa-volume-high" id="soundIcon"></i></button>
+    <button class="hbtn" id="btnPrint" title="Print"><i class="fa-solid fa-print"></i></button>
+    <button class="hbtn" id="btnLog" title="Activity Log"><i class="fa-solid fa-list-check"></i></button>
+    <button class="hbtn" id="btnLogout" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+  </div>
+
+  <div id="chatBox" class="hud">
+    <div id="chatLog"></div>
+    <form id="chatForm" autocomplete="off"><input id="chatInput" maxlength="80" placeholder="Press Enter to chat..."><button type="submit">Send</button></form>
+  </div>
+  <div id="emoteBar" class="hud">
+    <button data-e="0" title="Wave (1)">👋</button><button data-e="1" title="Heart (2)">❤️</button><button data-e="2" title="Laugh (3)">😂</button><button data-e="3" title="Star (4)">⭐</button>
+  </div>
+  <div id="prompt" class="hud hidden"></div>
+  <div id="buildBar" class="hud px-panel hidden"></div>
+  <div id="dialog" class="hud px-panel hidden"><div id="dlgName"></div><div id="dlgText"></div><div id="dlgChoices"></div></div>
+
+  <div id="touch" class="hud">
+    <div class="dpad">
+      <span></span><button data-k="ArrowUp">▲</button><span></span>
+      <button data-k="ArrowLeft">◀</button><span></span><button data-k="ArrowRight">▶</button>
+      <span></span><button data-k="ArrowDown">▼</button><span></span>
     </div>
-    <div class="log-footer">
-        <button class="btn btn-danger admin-only" style="font-size: 0.75rem;" onclick="clearLogs()">Clear Logs</button>
-    </div>
+    <div id="touchA"><button id="touchABtn">E</button></div>
+  </div>
 </div>
 
-<div class="bible-banner">
-    <i class="fa-solid fa-book-bible"></i>
-    <div>
-        <span class="bible-text" id="bibleVerse">"I can do all this through him who gives me strength."</span>
-        <span class="bible-ref" id="bibleRef">- Philippians 4:13</span>
-    </div>
+<div id="battle" class="hidden">
+  <div class="b-field">
+    <div class="b-box px-panel b-foe"><div class="nm" id="bFoeName"></div><div class="bar hp"><i id="bFoeHp"></i><span id="bFoeHpT"></span></div></div>
+    <canvas id="bFoeC" class="b-sprite" width="96" height="96"></canvas>
+    <canvas id="bMeC" class="b-sprite" width="96" height="120"></canvas>
+    <div class="b-box px-panel b-me"><div class="nm" id="bMeName"></div><div class="bar hp"><i id="bMeHp"></i><span id="bMeHpT"></span></div><div class="bar mp"><i id="bMeMp"></i><span id="bMeMpT"></span></div></div>
+  </div>
+  <div class="b-bottom"><div id="bLog"></div><div id="bActs"></div></div>
 </div>
 
-<nav class="quick-nav">
-    <div class="nav-row">
-        <a href="#sec-meals" class="nav-item"><i class="fa-solid fa-utensils"></i> Weekly Meals</a>
-        <a href="#sec-cooking" class="nav-item"><i class="fa-solid fa-fire-burner"></i> Weekend Cooking</a>
-        <a href="#sec-cafeteria-cleaning" class="nav-item"><i class="fa-solid fa-soap"></i> Cafeteria Cleaning</a>
-        <a href="#sec-dorm-cleaning" class="nav-item"><i class="fa-solid fa-broom"></i> Dorm Cleaning</a>
-        <a href="#sec-schedule" class="nav-item"><i class="fa-solid fa-pencil"></i> Class Schedule</a>
-        <a href="#sec-calendar" class="nav-item"><i class="fa-solid fa-calendar-days"></i> School Calendar</a>
-    </div>
-
-    <div class="nav-row-divider"></div>
-
-    <div class="nav-row nav-row-actions">
-        <span class="nav-item nav-danger" onclick="startTutorial()"><i class="fa-solid fa-circle-question"></i> Tutorial</span>
-        <span class="nav-item nav-danger admin-only" onclick="resetAllData()"><i class="fa-solid fa-trash"></i> Reset All</span>
-        <span class="nav-item nav-undo admin-only" onclick="undoResetData()"><i class="fa-solid fa-rotate-left"></i> Undo Reset</span>
-        <span class="nav-item nav-action admin-only" onclick="exportData()"><i class="fa-solid fa-download"></i> Backup Data</span>
-        <span class="nav-item nav-action admin-only" onclick="document.getElementById('importFileInput').click()"><i class="fa-solid fa-upload"></i> Restore Data</span>
-        <span class="nav-item nav-action" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</span>
-    </div>
-
-    <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importData(event)">
-</nav>
-
-<div class="container">
-
-    <div class="card" id="sec-meals">
-        <h2><i class="fa-solid fa-utensils"></i> Weekly Meal Menu & Sticker Ratings</h2>
-        <div class="meal-table-wrapper">
-            <table class="meal-table">
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">Meal</th>
-                        <th>Mon</th>
-                        <th>Tue</th>
-                        <th>Wed</th>
-                        <th>Thu</th>
-                        <th>Fri</th>
-                        <th>Sat</th>
-                        <th>Sun</th>
-                    </tr>
-                </thead>
-                <tbody id="mealTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card" id="sec-cooking">
-        <h2><i class="fa-solid fa-fire-burner"></i> Weekend Cooking Team (Sat - Sun)</h2>
-        <div class="grid-2" id="cookingGrid"></div>
-    </div>
-
-    <div class="card" id="sec-cafeteria-cleaning">
-        <h2><i class="fa-solid fa-soap"></i> Cafeteria Cleaning Team (Mon - Sun)</h2>
-        <div class="grid-7" id="cleaningGrid"></div>
-    </div>
-
-    <div class="card" id="sec-dorm-cleaning">
-        <h2><i class="fa-solid fa-broom"></i> Saturday Dorm Cleaning Team</h2>
-        <div class="grid-2">
-            <div>
-                <h3 class="girls-header"><i class="fa-solid fa-person-dress"></i> Girls' Dormitory</h3>
-                <table class="table-custom" id="girlsDormTable">
-                    <thead>
-                        <tr>
-                            <th>Cleaning Area</th>
-                            <th>Assigned Student</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <button class="btn" style="margin-top: 10px;" onclick="addDormRow('girlsDormTable')">+ Add Row</button>
-            </div>
-            <div>
-                <h3><i class="fa-solid fa-person"></i> Boys' Dormitory</h3>
-                <table class="table-custom" id="boysDormTable">
-                    <thead>
-                        <tr>
-                            <th>Cleaning Area</th>
-                            <th>Assigned Student</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <button class="btn" onclick="addDormRow('boysDormTable')" style="margin-top: 10px;">+ Add Row</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" id="sec-schedule">
-        <h2><i class="fa-solid fa-pen-ruler"></i> Grade Class Schedule & Sticky Notes</h2>
-        <div class="grade-selector">
-            <label for="gradeSelect" style="margin:0;">Select Grade:</label>
-            <select id="gradeSelect" onchange="loadScheduleAndSideNotes()">
-                <option value="6">Grade 6</option>
-                <option value="7">Grade 7</option>
-                <option value="8">Grade 8</option>
-                <option value="9">Grade 9</option>
-                <option value="10">Grade 10</option>
-                <option value="11">Grade 11</option>
-                <option value="12" selected>Grade 12</option>
-            </select>
-        </div>
-
-        <div class="schedule-container">
-            <div class="schedule-main">
-                <table class="table-custom" id="scheduleTable">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px; text-align: center;">Swap</th>
-                            <th style="width: 25%;">Time</th>
-                            <th>Period / Activity</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <button class="btn" onclick="addScheduleRow()" style="margin-top: 10px;">+ Add Period/Slot</button>
-            </div>
-
-            <div class="schedule-side">
-                <div class="sticky-note sticky-yellow">
-                    <h3><i class="fa-solid fa-pen-clip"></i> Items to Bring Tomorrow</h3>
-                    <textarea id="sideBring" class="auto-expand" placeholder="Type items to bring..." oninput="autoResizeTextarea(this); debouncedSaveSideContent('sideBring')"></textarea>
-                </div>
-
-                <div class="sticky-note sticky-blue">
-                    <h3><i class="fa-solid fa-thumbtack"></i> Announcements</h3>
-                    <textarea id="sideAnnounce" class="auto-expand" placeholder="Type announcements here..." oninput="autoResizeTextarea(this); debouncedSaveSideContent('sideAnnounce')"></textarea>
-                </div>
-
-                <div class="sticky-note sticky-pink">
-                    <h3><i class="fa-solid fa-hourglass-half"></i> Upcoming Deadlines</h3>
-                    <textarea id="sideTodo" class="auto-expand" placeholder="Type deadlines or notes..." oninput="autoResizeTextarea(this); debouncedSaveSideContent('sideTodo')"></textarea>
-                </div>
-
-                <div class="sticky-note sticky-green">
-                    <h3><i class="fa-solid fa-book-open-reader"></i> To Do List</h3>
-                    <textarea id="sideTodoGreen" class="auto-expand" placeholder="Type your task list here..." oninput="autoResizeTextarea(this); debouncedSaveSideContent('sideTodoGreen')"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" id="sec-calendar">
-        <h2><i class="fa-solid fa-calendar-days"></i> School Calendar</h2>
-        <div class="calendar-header">
-            <button class="btn" onclick="changeMonth(-1)">&lt; Prev</button>
-            <h3 id="calendarMonthYear" style="color: var(--primary-red);"></h3>
-            <button class="btn" onclick="changeMonth(1)">Next &gt;</button>
-        </div>
-        <div class="calendar-grid">
-            <div class="calendar-day-head">Sun</div>
-            <div class="calendar-day-head">Mon</div>
-            <div class="calendar-day-head">Tue</div>
-            <div class="calendar-day-head">Wed</div>
-            <div class="calendar-day-head">Thu</div>
-            <div class="calendar-day-head">Fri</div>
-            <div class="calendar-day-head">Sat</div>
-        </div>
-        <div class="calendar-grid" id="calendarDays"></div>
-    </div>
-
-</div>
+<div id="panelModal" class="modal hidden">
+  <div class="modal-win px-panel">
+    <div class="modal-head"><h3 id="panelTitle"></h3><button class="modal-x" id="panelClose" onclick="closePanel()">✕</button></div>
+    <div id="panelBody"></div>
+  </div>
 </div>
 
-<div id="tutorialOverlay" class="tutorial-overlay">
-    <div id="tutorialSpotlight" class="tutorial-spotlight"></div>
-    <div id="tutorialPopover" class="tutorial-popover">
-        <h4 id="tutTitle"><i class="fa-solid fa-lightbulb"></i> Title</h4>
-        <p id="tutText">Description</p>
-        <div id="tutInputArea"></div>
-        <div class="tutorial-controls">
-            <span class="tutorial-steps-count" id="tutStepCount">1 / 9</span>
-            <div class="tutorial-btns">
-                <button class="tutorial-btn tutorial-btn-skip" id="tutSkipBtn" onclick="handleSkipClick()">Skip</button>
-                <button class="tutorial-btn tutorial-btn-next" id="tutNextBtn" onclick="nextTutorialStep()">Next</button>
-            </div>
-        </div>
-    </div>
+<div id="classicView" class="hidden">
+  <div class="classic-top"><h1><i class="fa-solid fa-calendar-check"></i> Olivet Village — Classic View</h1>
+    <div><button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button> <button class="btn btn-alt" onclick="toggleClassic(false)"><i class="fa-solid fa-gamepad"></i> Back to Village</button></div></div>
+  <div id="classicCards"></div>
 </div>
 
-<!-- Firebase Modular SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import {
-        getFirestore,
-        doc,
-        setDoc,
-        onSnapshot,
-        collection,
-        addDoc,
-        query,
-        orderBy,
-        limit,
-        getDocs,
-        writeBatch,
-        runTransaction
-    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDdaoNHitc3Z3vSrhyv0gmtfMsEACk4vGc",
-        authDomain: "olivet-scheduler.firebaseapp.com",
-        projectId: "olivet-scheduler",
-        storageBucket: "olivet-scheduler.firebasestorage.app",
-        messagingSenderId: "377014643728",
-        appId: "1:377014643728:web:d2a920ea5d9c433e20ae95",
-        measurementId: "G-QEN7Y7E844"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    window.firebaseAuth = auth;
-
-    /*
-     * FIRESTORE SYNC
-     *
-     * schedulerData/{key}
-     *   - Shared scheduler data.
-     *   - Saves use a transaction so two users don't blindly overwrite
-     *     a document from an old local copy.
-     *
-     * activityLogs/{auto-id}
-     *   - ONE Firestore document per activity.
-     *   - This is the important part for activity logs: users can add logs
-     *     simultaneously without replacing the whole shared log array.
-     */
-
-    const realtimeUnsubscribers = new Map();
-    let activityLogsUnsubscribe = null;
-    let activityLogsReady = false;
-    let activityLogWriteChain = Promise.resolve();
-
-    function isPlainObject(value) {
-        return value !== null &&
-               typeof value === 'object' &&
-               !Array.isArray(value);
-    }
-
-    /*
-     * Merge objects field-by-field.
-     *
-     * For arrays, preserve the latest remote array and merge local indexes.
-     * This reduces accidental loss when two users edit different fields.
-     * A true conflict on the exact same field remains last-write-wins.
-     */
-    function mergeRemoteData(remote, local) {
-        if (Array.isArray(remote) && Array.isArray(local)) {
-            const result = remote.slice();
-
-            local.forEach((localValue, index) => {
-                const remoteValue = result[index];
-
-                if (isPlainObject(localValue) && isPlainObject(remoteValue)) {
-                    result[index] = mergeRemoteData(remoteValue, localValue);
-                } else {
-                    result[index] = localValue;
-                }
-            });
-
-            // Respect an intentional local deletion from the end.
-            if (local.length < result.length) {
-                result.length = local.length;
-            }
-
-            return result;
-        }
-
-        if (isPlainObject(remote) && isPlainObject(local)) {
-            const result = { ...remote };
-
-            Object.keys(local).forEach(key => {
-                const localValue = local[key];
-                const remoteValue = result[key];
-
-                if (isPlainObject(localValue) && isPlainObject(remoteValue)) {
-                    result[key] = mergeRemoteData(remoteValue, localValue);
-                } else {
-                    result[key] = localValue;
-                }
-            });
-
-            return result;
-        }
-
-        return local;
-    }
-
-    window.dbSaveData = async function(key, data) {
-        if (!window.firebaseAuth?.currentUser) {
-            console.warn(`Firestore save skipped for "${key}": user is not authenticated.`);
-            return;
-        }
-
-        try {
-            const ref = doc(db, "schedulerData", key);
-            const user = window.firebaseAuth.currentUser;
-
-            await runTransaction(db, async (transaction) => {
-                const snap = await transaction.get(ref);
-
-                if (data === null) {
-                    transaction.set(ref, {
-                        value: null,
-                        updatedAtMs: Date.now(),
-                        updatedBy: user.uid
-                    }, { merge: true });
-                    return;
-                }
-
-                if (!snap.exists() || snap.data().value === null || snap.data().value === undefined) {
-                    transaction.set(ref, {
-                        value: data,
-                        updatedAtMs: Date.now(),
-                        updatedBy: user.uid
-                    }, { merge: true });
-                    return;
-                }
-
-                const remoteValue = snap.data().value;
-                const mergedValue = mergeRemoteData(remoteValue, data);
-
-                transaction.set(ref, {
-                    value: mergedValue,
-                    updatedAtMs: Date.now(),
-                    updatedBy: user.uid
-                }, { merge: true });
-            });
-        } catch (error) {
-            console.error(`Firestore save error for "${key}":`, error);
-        }
-    };
-
-    // Upload local scheduler data only when a corresponding Firestore document
-    // does not exist yet. This prevents a new browser from overwriting shared data
-    // while still recovering data that was entered before the first successful sync.
-    window.dbSyncLocalIfMissing = async function(key, data) {
-        if (!window.firebaseAuth?.currentUser || data === undefined) return;
-
-        try {
-            const ref = doc(db, "schedulerData", key);
-            const snap = await getDocs(query(collection(db, "schedulerData")));
-            const existing = snap.docs.find(d => d.id === key);
-            if (!existing) {
-                await setDoc(ref, {
-                    value: data,
-                    updatedAtMs: Date.now(),
-                    updatedBy: window.firebaseAuth.currentUser.uid
-                });
-            }
-        } catch (error) {
-            console.error(`Firestore initial sync error for "${key}":`, error);
-        }
-    };
-
-    window.dbListenData = function(key, callback) {
-        if (realtimeUnsubscribers.has(key)) {
-            realtimeUnsubscribers.get(key)();
-            realtimeUnsubscribers.delete(key);
-        }
-
-        const unsubscribe = onSnapshot(
-            doc(db, "schedulerData", key),
-            (docSnap) => {
-                callback(
-                    docSnap.exists()
-                        ? docSnap.data().value
-                        : null
-                );
-            },
-            (error) => {
-                console.error(`Firestore listener error for "${key}":`, error);
-            }
-        );
-
-        realtimeUnsubscribers.set(key, unsubscribe);
-        return unsubscribe;
-    };
-
-    /*
-     * SHARED ACTIVITY LOGS
-     *
-     * Never write activity_logs as one array to schedulerData.
-     * Every log gets its own Firestore document.
-     */
-
-    window.dbAddLog = function(logEntry) {
-        /*
-         * Queue log writes so rapid edits don't create a burst of competing
-         * operations in the same browser.
-         */
-        activityLogWriteChain = activityLogWriteChain
-            .then(async () => {
-                const user = window.firebaseAuth?.currentUser;
-
-                if (!user) {
-                    console.warn("Activity log skipped: user is not authenticated.");
-                    return;
-                }
-
-                const createdAtMs = Number.isFinite(logEntry.createdAtMs)
-                    ? logEntry.createdAtMs
-                    : Date.now();
-
-                await addDoc(collection(db, "activityLogs"), {
-                    user: logEntry.user || user.email?.split("@")[0] || "User",
-                    action: logEntry.action || "",
-                    timestamp: logEntry.timestamp || new Date().toLocaleString(
-                        "en-US",
-                        { dateStyle: "short", timeStyle: "short" }
-                    ),
-                    createdAtMs,
-                    uid: user.uid
-                });
-            })
-            .catch(error => {
-                console.error("Firestore activity log error:", error);
-            });
-
-        return activityLogWriteChain;
-    };
-
-    window.initActivityLogSync = function() {
-        if (activityLogsUnsubscribe) {
-            activityLogsUnsubscribe();
-            activityLogsUnsubscribe = null;
-        }
-
-        /*
-         * Keep the query simple: one single-field orderBy + limit.
-         * No composite index is required.
-         */
-        const logsQuery = query(
-            collection(db, "activityLogs"),
-            orderBy("createdAtMs", "desc"),
-            limit(100)
-        );
-
-        activityLogsReady = false;
-
-        activityLogsUnsubscribe = onSnapshot(
-            logsQuery,
-            (snapshot) => {
-                const remoteLogs = snapshot.docs.map(logDoc => ({
-                    id: logDoc.id,
-                    ...logDoc.data()
-                }));
-
-                /*
-                 * During the initial snapshot, don't throw away an optimistic
-                 * local log that has just been created but hasn't reached the
-                 * server snapshot yet.
-                 */
-                const pendingLocalLogs = !activityLogsReady
-                    ? getData("activity_logs", []).filter(localLog => {
-                        if (!localLog || !localLog.createdAtMs) return false;
-
-                        return !remoteLogs.some(remoteLog =>
-                            remoteLog.createdAtMs === localLog.createdAtMs &&
-                            remoteLog.user === localLog.user &&
-                            remoteLog.action === localLog.action
-                        );
-                    })
-                    : [];
-
-                const combined = [...pendingLocalLogs, ...remoteLogs];
-
-                combined.sort(
-                    (a, b) =>
-                        (Number(b.createdAtMs) || 0) -
-                        (Number(a.createdAtMs) || 0)
-                );
-
-                const trimmed = combined.slice(0, 100);
-
-                localStorage.setItem(
-                    "olivet_activity_logs",
-                    JSON.stringify(trimmed)
-                );
-
-                activityLogsReady = true;
-
-                if (window.renderLogs) {
-                    window.renderLogs();
-                }
-            },
-            (error) => {
-                console.error("Activity log listener error:", error);
-
-                if (window.renderLogs) {
-                    window.renderLogs();
-                }
-            }
-        );
-    };
-
-    window.dbClearLogs = async function() {
-        if (!window.firebaseAuth?.currentUser) {
-            throw new Error("You must be signed in to clear activity logs.");
-        }
-
-        try {
-            /*
-             * Firestore batch writes are limited to 500 operations.
-             * Delete in chunks so the Clear Logs button also works when
-             * there are more than 500 historical logs.
-             */
-            const snapshot = await getDocs(collection(db, "activityLogs"));
-
-            if (snapshot.empty) return;
-
-            for (let i = 0; i < snapshot.docs.length; i += 500) {
-                const batch = writeBatch(db);
-                const chunk = snapshot.docs.slice(i, i + 500);
-
-                chunk.forEach(logDoc => batch.delete(logDoc.ref));
-
-                await batch.commit();
-            }
-        } catch (error) {
-            console.error("Firestore clear logs error:", error);
-            throw error;
-        }
-    };
-
-    // 실시간 동기화 설정 함수
-    let realtimeSyncStarted = false;
-
-    window.initRealtimeSync = function() {
-        if (realtimeSyncStarted) return;
-        realtimeSyncStarted = true;
-
-        const syncKeys = [
-            'meals',
-            'meal_sticker_votes',
-            'cooking',
-            'cleaning',
-            'girlsDormData',
-            'boysDormData'
-        ];
-
-        // Also listen to every calendar month already stored locally.
-        Object.keys(localStorage)
-            .filter(k => k.startsWith('olivet_calendar_'))
-            .forEach(k => syncKeys.push(k.replace('olivet_', '')));
-
-        const uniqueKeys = [...new Set(syncKeys)];
-
-        const attachListener = (key) => {
-            window.dbListenData(key, (remoteVal) => {
-                if (remoteVal === null || remoteVal === undefined) return;
-
-                const remoteJson = JSON.stringify(remoteVal);
-                const localVal = localStorage.getItem('olivet_' + key);
-                if (localVal === remoteJson) return;
-
-                // Never replace localStorage while any textarea is being edited.
-                // The old code replaced localStorage first, which could make the
-                // pending debounced save read the remote value and lose the user's input.
-                const active = document.activeElement;
-                if (active && active.tagName === 'TEXTAREA') return;
-
-                localStorage.setItem('olivet_' + key, remoteJson);
-                refreshUIByKey(key);
-            });
-        };
-
-        uniqueKeys.forEach(attachListener);
-        window.initActivityLogSync();
-
-        [6, 7, 8, 9, 10, 11, 12].forEach(g => {
-            const schedKey = `schedule_g${g}`;
-            attachListener(schedKey);
-
-            ['sideBring', 'sideAnnounce', 'sideTodo', 'sideTodoGreen'].forEach(sideId => {
-                const sideKey = `side_${sideId}_g${g}`;
-                window.dbListenData(sideKey, (remoteVal) => {
-                    if (remoteVal === null || remoteVal === undefined) return;
-
-                    const remoteJson = JSON.stringify(remoteVal);
-                    const localVal = localStorage.getItem('olivet_' + sideKey);
-                    if (localVal === remoteJson) return;
-
-                    const elem = document.getElementById(sideId);
-                    if (elem && document.activeElement === elem) return;
-
-                    localStorage.setItem('olivet_' + sideKey, remoteJson);
-
-                    const curGrade = document.getElementById('gradeSelect')?.value;
-                    if (String(curGrade) !== String(g)) return;
-
-                    elem.value = remoteVal;
-                    if (window.autoResizeTextarea) window.autoResizeTextarea(elem, 80);
-                });
-            });
-        });
-
-        // Calendar is dynamic: subscribe to the month whenever it is rendered.
-        window.listenCalendarData = function(calDataKey) {
-            if (realtimeUnsubscribers.has(calDataKey)) return;
-            window.dbListenData(calDataKey, (remoteVal) => {
-                if (remoteVal === null || remoteVal === undefined) return;
-
-                const remoteJson = JSON.stringify(remoteVal);
-                const localVal = localStorage.getItem('olivet_' + calDataKey);
-                if (localVal === remoteJson) return;
-
-                const active = document.activeElement;
-                if (active && active.tagName === 'TEXTAREA') return;
-
-                localStorage.setItem('olivet_' + calDataKey, remoteJson);
-                if (window.renderCalendar) window.renderCalendar();
-            });
-        };
-
-        uniqueKeys
-            .filter(k => k.startsWith('calendar_'))
-            .forEach(k => window.listenCalendarData(k));
-
-        // If this browser already contains scheduler data, initialize missing
-        // Firestore documents without overwriting documents that other users have.
-        const excluded = new Set([
-            'auth_user', 'user_id', 'activity_logs', 'dark_mode',
-            'tutorial_completed', 'undo_backup'
-        ]);
-
-        Object.keys(localStorage)
-            .filter(k => k.startsWith('olivet_'))
-            .forEach(k => {
-                const cleanKey = k.replace('olivet_', '');
-                if (excluded.has(cleanKey)) return;
-                try {
-                    const data = JSON.parse(localStorage.getItem(k));
-                    window.dbSyncLocalIfMissing(cleanKey, data);
-                } catch (e) {
-                    console.warn('Skipping invalid local scheduler data:', cleanKey);
-                }
-            });
-    };
-
-    function refreshUIByKey(key) {
-        // Never redraw a textarea while the user is typing.
-        if (
-            document.activeElement &&
-            document.activeElement.tagName === 'TEXTAREA'
-        ) {
-            return;
-        }
-
-        if (key === 'meals' || key === 'meal_sticker_votes') {
-            if (window.initMeals) window.initMeals();
-        } else if (key === 'cooking') {
-            if (window.initCooking) window.initCooking();
-        } else if (key === 'cleaning') {
-            if (window.initCleaning) window.initCleaning();
-        } else if (
-            key === 'girlsDormData' ||
-            key === 'boysDormData'
-        ) {
-            if (window.initDormTables) window.initDormTables();
-        }
-    }
-
-    window.handleGoogleLogin = async function() {
-        const currentUser = window.getData ? window.getData('auth_user', null) : null;
-        if (currentUser && currentUser.nickname) {
-            if (confirm('Are you sure you want to logout?')) {
-                try {
-                    if (window.addLog) window.addLog('Logged out');
-                    await signOut(auth);
-                    localStorage.removeItem('olivet_auth_user');
-                    localStorage.removeItem('olivet_user_id');
-                    window.initAuthUI();
-                } catch (err) {
-                    console.error("Sign-out error:", err);
-                }
-            }
-            return;
-        }
-
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({
-            prompt: "select_account"
-        });
-
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            const email = (user.email || '').toLowerCase();
-
-            const nickname = email.split('@')[0];
-            const userData = { email: email, nickname: nickname, photoURL: user.photoURL || '' };
-            
-            if (window.saveData) {
-                window.saveData('auth_user', userData);
-            }
-            localStorage.setItem('olivet_user_id', nickname);
-
-            if (window.initAuthUI) window.initAuthUI();
-            if (window.addLog) window.addLog('Logged in via Google as ' + nickname);
-
-        } catch (error) {
-            console.error("Google Sign-In Error:", error);
-            if (error.code !== 'auth/popup-closed-by-user') {
-                alert('Login failed: ' + error.message);
-            }
-        }
-    };
-
-    onAuthStateChanged(auth, (user) => {
-        if (user && user.email) {
-            const status = document.getElementById('syncStatus');
-            if (status) {
-                status.textContent = '● Live';
-                status.title = 'Connected to realtime Firestore sync';
-            }
-
-            const email = user.email.toLowerCase();
-            const nickname = email.split('@')[0];
-            const userData = { email: email, nickname: nickname, photoURL: user.photoURL || '' };
-            localStorage.setItem('olivet_auth_user', JSON.stringify(userData));
-            localStorage.setItem('olivet_user_id', nickname);
-            if (window.initAuthUI) window.initAuthUI();
-            if (window.initRealtimeSync) window.initRealtimeSync();
-        } else {
-            const status = document.getElementById('syncStatus');
-            if (status) {
-                status.textContent = '○ Offline';
-                status.title = 'Sign in to enable shared realtime data';
-            }
-
-            localStorage.removeItem('olivet_auth_user');
-            if (window.initAuthUI) window.initAuthUI();
-        }
-    });
-</script>
-
-<script>
-    const ADMIN_EMAIL = "mnoh@olivetacademy.org";
-
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const weekendDays = ['Saturday', 'Sunday'];
-    const mealTypes = [
-        { key: 'b', name: 'Breakfast' },
-        { key: 'l', name: 'Lunch' },
-        { key: 'd', name: 'Dinner' }
-    ];
-
-    const stickerTypes = [
-        { key: 'delicious', emoji: '😋', label: 'Delicious' },
-        { key: 'average', emoji: '😐', label: 'Average' },
-        { key: 'bad', emoji: '😭', label: 'Poor' }
-    ];
-
-    const bibleVerses = [
-        { text: '"I can do all this through him who gives me strength."', ref: '- Philippians 4:13' },
-        { text: '"Trust in the LORD with all your heart and lean not on your own understanding."', ref: '- Proverbs 3:5' },
-        { text: '"For I know the plans I have for you," declares the LORD, "plans to prosper you and not to harm you, plans to give you hope and a future."', ref: '- Jeremiah 29:11' },
-        { text: '"Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go."', ref: '- Joshua 1:9' },
-        { text: '"The LORD is my shepherd, I lack nothing."', ref: '- Psalm 23:1' },
-        { text: '"And we know that in all things God works for the good of those who love him."', ref: '- Romans 8:28' },
-        { text: '"Your word is a lamp for my feet, a light on my path."', ref: '- Psalm 119:105' }
-    ];
-
-    function escapeHtml(str) {
-        if (str === null || str === undefined) return '';
-        return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function debounce(func, wait = 300) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-
-    function saveData(key, data) {
-        const json = JSON.stringify(data);
-        localStorage.setItem('olivet_' + key, json);
-        if (window.dbSaveData) {
-            window.dbSaveData(key, data);
-        }
-    }
-
-    function getData(key, defaultData) {
-        try {
-            const data = localStorage.getItem('olivet_' + key);
-            return data ? JSON.parse(data) : defaultData;
-        } catch(e) {
-            return defaultData;
-        }
-    }
-
-    function isAdminUser() {
-        let email = "";
-        if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-            email = window.firebaseAuth.currentUser.email || "";
-        } else {
-            const currentUser = getData('auth_user', null);
-            if (currentUser && currentUser.email) email = currentUser.email;
-        }
-        return (email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
-    }
-
-    function initAuthUI() {
-        const currentUser = getData('auth_user', null);
-        const loginBtnText = document.getElementById('loginBtnText');
-        const loginIcon = document.getElementById('loginIcon');
-        const userBadge = document.getElementById('userBadge');
-        const userNicknameSpan = document.getElementById('userNicknameSpan');
-
-        if (currentUser && currentUser.nickname) {
-            document.body.classList.add('is-logged-in');
-            loginBtnText.textContent = 'Logout';
-            loginIcon.className = 'fa-solid fa-right-from-bracket';
-            userBadge.style.display = 'flex';
-            userNicknameSpan.textContent = currentUser.nickname;
-        } else {
-            document.body.classList.remove('is-logged-in');
-            loginBtnText.textContent = 'Login with Google';
-            loginIcon.className = 'fa-brands fa-google';
-            userBadge.style.display = 'none';
-        }
-
-        if (isAdminUser()) {
-            document.body.classList.add('is-admin');
-        } else {
-            document.body.classList.remove('is-admin');
-        }
-    }
-
-    function addLog(actionDescription) {
-        const currentUser = getData(
-            'auth_user',
-            { nickname: 'Guest' }
-        );
-
-        const displayUser =
-            currentUser?.nickname ||
-            window.firebaseAuth?.currentUser?.email?.split('@')[0] ||
-            'Guest';
-
-        const createdAtMs = Date.now();
-
-        const logEntry = {
-            user: displayUser,
-            action: actionDescription,
-            timestamp: new Date().toLocaleString(
-                'en-US',
-                { dateStyle: 'short', timeStyle: 'short' }
-            ),
-            createdAtMs
-        };
-
-        /*
-         * Optimistic UI: show it immediately on this browser.
-         * Firestore then becomes the shared source of truth.
-         */
-        const logs = getData('activity_logs', []);
-
-        logs.unshift(logEntry);
-
-        if (logs.length > 100) {
-            logs.length = 100;
-        }
-
-        localStorage.setItem(
-            'olivet_activity_logs',
-            JSON.stringify(logs)
-        );
-
-        renderLogs();
-
-        /*
-         * IMPORTANT:
-         * Do NOT call saveData('activity_logs', logs).
-         * Each activity is a separate Firestore document.
-         */
-        if (window.dbAddLog) {
-            window.dbAddLog(logEntry);
-        }
-    }
-
-    function renderLogs() {
-        const logContainer = document.getElementById('logContainer');
-        const logs = getData('activity_logs', []);
-        
-        if (!logContainer) return;
-        if (logs.length === 0) {
-            logContainer.innerHTML = `<div style="text-align: center; opacity: 0.6; padding: 20px;">No recent activities logged.</div>`;
-            return;
-        }
-
-        logContainer.innerHTML = logs.map(l => `
-            <div class="log-item">
-                <span class="log-user">${escapeHtml(l.user)}</span>
-                <div>${escapeHtml(l.action)}</div>
-                <span class="log-time"><i class="fa-regular fa-clock"></i> ${escapeHtml(l.timestamp)}</span>
-            </div>
-        `).join('');
-    }
-
-    function toggleLogPanel() {
-        const panel = document.getElementById('logPanel');
-        const icon = document.getElementById('logToggleIcon');
-        panel.classList.toggle('open');
-        if (panel.classList.contains('open')) {
-            icon.className = 'fa-solid fa-chevron-right';
-        } else {
-            icon.className = 'fa-solid fa-chevron-left';
-        }
-    }
-
-    async function clearLogs() {
-        if (!isAdminUser()) return;
-
-        if (!confirm('Are you sure you want to clear all activity logs?')) {
-            return;
-        }
-
-        try {
-            if (window.dbClearLogs) {
-                await window.dbClearLogs();
-            }
-
-            localStorage.setItem(
-                'olivet_activity_logs',
-                '[]'
-            );
-
-            renderLogs();
-        } catch (error) {
-            console.error(error);
-            alert('Failed to clear activity logs. Please try again.');
-        }
-    }
-
-    function getUserId() {
-        let userId = localStorage.getItem('olivet_user_id');
-        if (!userId) {
-            userId = 'guest_' + Math.random().toString(36).substring(2, 9);
-            localStorage.setItem('olivet_user_id', userId);
-        }
-        return userId;
-    }
-
-    function autoResizeTextarea(element, minHeight = 38) {
-        element.style.height = 'auto';
-        const newHeight = element.scrollHeight;
-        element.style.height = (newHeight > minHeight ? newHeight : minHeight) + 'px';
-        applySubjectTag(element);
-    }
-
-    function resizeAllTextareas() {
-        setTimeout(() => {
-            document.querySelectorAll('.auto-expand').forEach(el => autoResizeTextarea(el));
-        }, 15);
-    }
-
-    function applySubjectTag(element) {
-        if (!element.closest('#scheduleTable')) return;
-
-        const val = element.value.toLowerCase();
-        const subjects = [
-            { name: 'math', keywords: ['math'], color: 'rgba(231, 76, 60, 0.35)' },
-            { name: 'science', keywords: ['science', 'chem', 'bio', 'physics'], color: 'rgba(230, 126, 34, 0.35)' },
-            { name: 'english', keywords: ['english', 'lit'], color: 'rgba(241, 196, 15, 0.4)' },
-            { name: 'history', keywords: ['history', 'social'], color: 'rgba(46, 204, 113, 0.35)' },
-            { name: 'pe', keywords: ['pe', 'gym'], color: 'rgba(52, 152, 219, 0.35)' },
-            { name: 'art', keywords: ['art', 'music'], color: 'rgba(63, 81, 181, 0.35)' },
-            { name: 'chapel', keywords: ['chapel', 'bible'], color: 'rgba(155, 89, 182, 0.35)' },
-            { name: 'elective', keywords: ['elective'], color: 'rgba(149, 165, 166, 0.4)' }
-        ];
-
-        subjects.forEach(s => element.classList.remove(`tag-${s.name}`));
-        element.style.background = '';
-
-        const matched = subjects.filter(s => s.keywords.some(kw => val.includes(kw)));
-
-        if (matched.length === 1) {
-            element.classList.add(`tag-${matched[0].name}`);
-        } else if (matched.length >= 2) {
-            const c1 = matched[0].color;
-            const c2 = matched[1].color;
-            element.style.background = `linear-gradient(90deg, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
-        }
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        saveData('dark_mode', isDark);
-        updateThemeUI(isDark);
-    }
-
-    function updateThemeUI(isDark) {
-        const icon = document.getElementById('themeIcon');
-        const text = document.getElementById('themeText');
-        if (isDark) {
-            icon.className = 'fa-solid fa-sun';
-            text.textContent = 'Light Mode';
-        } else {
-            icon.className = 'fa-solid fa-moon';
-            text.textContent = 'Dark Mode';
-        }
-    }
-
-    function initTheme() {
-        const isDark = getData('dark_mode', false);
-        if (isDark) document.body.classList.add('dark-mode');
-        updateThemeUI(isDark);
-    }
-
-    function initBibleVerse() {
-        const randomVerse = bibleVerses[Math.floor(Math.random() * bibleVerses.length)];
-        document.getElementById('bibleVerse').textContent = randomVerse.text;
-        document.getElementById('bibleRef').textContent = randomVerse.ref;
-    }
-
-    function initMeals() {
-        const tbody = document.getElementById('mealTableBody');
-        const meals = getData('meals', {});
-        const votes = getData('meal_sticker_votes', {}); 
-        const userId = getUserId();
-        tbody.innerHTML = '';
-
-        mealTypes.forEach(meal => {
-            const tr = document.createElement('tr');
-            let rowHtml = `<td class="meal-type-header">${escapeHtml(meal.name)}</td>`;
-
-            daysOfWeek.forEach(day => {
-                const dayData = meals[day] || { b: '', l: '', d: '' };
-                const textVal = dayData[meal.key] || '';
-                const baseVoteKey = `${day}_${meal.key}`;
-
-                let stickerBarHtml = `<div class="sticker-bar" id="bar_${escapeHtml(baseVoteKey)}">`;
-                
-                stickerTypes.forEach(st => {
-                    const stVoteKey = `${baseVoteKey}_${st.key}`;
-                    const userList = Array.isArray(votes[stVoteKey]) ? votes[stVoteKey] : [];
-                    const voteCount = userList.length;
-                    const isSelected = userList.includes(userId);
-                    const activeClass = isSelected ? 'selected' : '';
-
-                    stickerBarHtml += `
-                        <button class="sticker-btn ${activeClass}" 
-                                id="btn_${escapeHtml(stVoteKey)}" 
-                                onclick="voteSticker('${escapeHtml(day)}', '${escapeHtml(meal.key)}', '${escapeHtml(st.key)}')" 
-                                title="${escapeHtml(st.label)}">
-                            <span class="emoji">${st.emoji}</span>
-                            <span id="count_${escapeHtml(stVoteKey)}">${voteCount}</span>
-                        </button>
-                    `;
-                });
-
-                stickerBarHtml += `</div>`;
-
-                rowHtml += `
-                    <td>
-                        <div class="meal-cell-container">
-                            <textarea class="auto-expand" 
-                                      placeholder="Menu..."
-                                      oninput="autoResizeTextarea(this); debouncedSaveMeal('${escapeHtml(day)}', '${escapeHtml(meal.key)}', this.value)"
-                            >${escapeHtml(textVal)}</textarea>
-                            ${stickerBarHtml}
-                        </div>
-                    </td>
-                `;
-            });
-
-            tr.innerHTML = rowHtml;
-            tbody.appendChild(tr);
-        });
-        resizeAllTextareas();
-    }
-
-    function saveMeal(day, type, value) {
-        const meals = getData('meals', {});
-        if (!meals[day]) meals[day] = { b: '', l: '', d: '' };
-        
-        if (meals[day][type] !== value) {
-            meals[day][type] = value;
-            saveData('meals', meals);
-            addLog(`Updated ${day} ${type.toUpperCase()} meal: "${value}"`);
-        }
-    }
-
-    const debouncedSaveMeal = debounce((day, type, val) => saveMeal(day, type, val), 300);
-
-    function voteSticker(day, mealKey, stickerKey) {
-        const votes = getData('meal_sticker_votes', {});
-        const userId = getUserId();
-        const baseVoteKey = `${day}_${mealKey}`;
-        const targetStVoteKey = `${baseVoteKey}_${stickerKey}`;
-
-        let currentSelectedKey = null;
-
-        stickerTypes.forEach(st => {
-            const key = `${baseVoteKey}_${st.key}`;
-            if (Array.isArray(votes[key]) && votes[key].includes(userId)) {
-                currentSelectedKey = st.key;
-            }
-        });
-
-        if (currentSelectedKey === stickerKey) {
-            const idx = votes[targetStVoteKey].indexOf(userId);
-            if (idx !== -1) votes[targetStVoteKey].splice(idx, 1);
-            addLog(`Removed rating on ${day} ${mealKey.toUpperCase()} meal`);
-        } else {
-            if (currentSelectedKey) {
-                const prevKey = `${baseVoteKey}_${currentSelectedKey}`;
-                const prevIdx = votes[prevKey].indexOf(userId);
-                if (prevIdx !== -1) votes[prevKey].splice(prevIdx, 1);
-            }
-
-            if (!Array.isArray(votes[targetStVoteKey])) {
-                votes[targetStVoteKey] = [];
-            }
-            votes[targetStVoteKey].push(userId);
-            addLog(`Voted [${stickerKey}] for ${day} ${mealKey.toUpperCase()} meal`);
-        }
-
-        saveData('meal_sticker_votes', votes);
-
-        stickerTypes.forEach(st => {
-            const key = `${baseVoteKey}_${st.key}`;
-            const userList = Array.isArray(votes[key]) ? votes[key] : [];
-            const btn = document.getElementById(`btn_${key}`);
-            const countSpan = document.getElementById(`count_${key}`);
-
-            if (btn && countSpan) {
-                countSpan.textContent = userList.length;
-                if (userList.includes(userId)) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
-            }
-        });
-    }
-
-    function initCooking() {
-        const cookingGrid = document.getElementById('cookingGrid');
-        const cooking = getData('cooking', {});
-        cookingGrid.innerHTML = '';
-
-        weekendDays.forEach((day, index) => {
-            const dayData = cooking[day] || { l: '', d: '' };
-            const noteColor = index === 0 ? 'sticky-yellow' : 'sticky-blue';
-            const box = document.createElement('div');
-            box.className = `sticky-note ${noteColor}`;
-            box.innerHTML = `
-                <h3><i class="fa-solid fa-utensils"></i> ${escapeHtml(day)} Cooking</h3>
-                <label>Lunch Cook</label>
-                <textarea class="auto-expand" placeholder="Assigned student..." oninput="autoResizeTextarea(this); debouncedSaveCooking('${escapeHtml(day)}', 'l', this.value)">${escapeHtml(dayData.l || '')}</textarea>
-                <label>Dinner Cook</label>
-                <textarea class="auto-expand" placeholder="Assigned student..." oninput="autoResizeTextarea(this); debouncedSaveCooking('${escapeHtml(day)}', 'd', this.value)">${escapeHtml(dayData.d || '')}</textarea>
-            `;
-            cookingGrid.appendChild(box);
-        });
-        resizeAllTextareas();
-    }
-
-    function saveCooking(day, type, value) {
-        const cooking = getData('cooking', {});
-        if (!cooking[day]) cooking[day] = { l: '', d: '' };
-        if (cooking[day][type] !== value) {
-            cooking[day][type] = value;
-            saveData('cooking', cooking);
-            addLog(`Updated ${day} ${type === 'l' ? 'Lunch' : 'Dinner'} Cook: "${value}"`);
-        }
-    }
-
-    const debouncedSaveCooking = debounce((day, type, val) => saveCooking(day, type, val), 300);
-
-    function initCleaning() {
-        const cleaningGrid = document.getElementById('cleaningGrid');
-        const cleaning = getData('cleaning', {});
-        cleaningGrid.innerHTML = '';
-
-        const colors = ['sticky-yellow', 'sticky-blue', 'sticky-pink', 'sticky-green'];
-
-        daysOfWeek.forEach((day, idx) => {
-            const person = cleaning[day] || '';
-            const box = document.createElement('div');
-            box.className = `sticky-note ${colors[idx % colors.length]}`;
-            box.innerHTML = `
-                <h4><i class="fa-solid fa-broom"></i> ${escapeHtml(day.substring(0, 3))}</h4>
-                <textarea class="auto-expand" placeholder="Student name..." oninput="autoResizeTextarea(this); debouncedSaveCleaning('${escapeHtml(day)}', this.value)">${escapeHtml(person)}</textarea>
-            `;
-            cleaningGrid.appendChild(box);
-        });
-        resizeAllTextareas();
-    }
-
-    function saveCleaning(day, value) {
-        const cleaning = getData('cleaning', {});
-        if (cleaning[day] !== value) {
-            cleaning[day] = value;
-            saveData('cleaning', cleaning);
-            addLog(`Updated Cafeteria Cleaning (${day}): "${value}"`);
-        }
-    }
-
-    const debouncedSaveCleaning = debounce((day, val) => saveCleaning(day, val), 300);
-
-    function initDormTables() {
-        renderDormTable('girlsDormTable', 'girlsDormData');
-        renderDormTable('boysDormTable', 'boysDormData');
-    }
-
-    function renderDormTable(tableId, storageKey) {
-        const tbody = document.querySelector(`#${tableId} tbody`);
-        let data = getData(storageKey, null);
-        
-        if (!data || !Array.isArray(data)) {
-            data = Array(6).fill().map(() => ({ area: '', person: '' }));
-            saveData(storageKey, data);
-        }
-
-        tbody.innerHTML = '';
-        data.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><textarea class="auto-expand" placeholder="Area..." oninput="autoResizeTextarea(this); debouncedSaveDormRow('${escapeHtml(storageKey)}', ${index}, 'area', this.value)">${escapeHtml(item.area || '')}</textarea></td>
-                <td><textarea class="auto-expand" placeholder="Student..." oninput="autoResizeTextarea(this); debouncedSaveDormRow('${escapeHtml(storageKey)}', ${index}, 'person', this.value)">${escapeHtml(item.person || '')}</textarea></td>
-                <td style="vertical-align: middle; text-align: center;"><button class="btn btn-danger" onclick="deleteDormRow('${escapeHtml(storageKey)}', ${index}, '${escapeHtml(tableId)}')">X</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-        resizeAllTextareas();
-    }
-
-    function saveDormRow(storageKey, index, field, value) {
-        const data = getData(storageKey, []);
-        if (!data[index]) data[index] = { area: '', person: '' };
-        if (data[index][field] !== value) {
-            data[index][field] = value;
-            saveData(storageKey, data);
-            const dormName = storageKey.includes('girls') ? "Girls' Dorm" : "Boys' Dorm";
-            const fieldName = field === 'area' ? 'Area' : 'Assigned Student';
-            addLog(`Updated ${dormName} cleaning row ${index + 1} (${fieldName}): "${value}"`);
-        }
-    }
-
-    const debouncedSaveDormRow = debounce((key, idx, fld, val) => saveDormRow(key, idx, fld, val), 300);
-
-    function addDormRow(tableId) {
-        const storageKey = tableId === 'girlsDormTable' ? 'girlsDormData' : 'boysDormData';
-        const data = getData(storageKey, []);
-        data.push({ area: '', person: '' });
-        saveData(storageKey, data);
-        renderDormTable(tableId, storageKey);
-        addLog(`Added new row to ${tableId === 'girlsDormTable' ? "Girls' Dorm" : "Boys' Dorm"}`);
-    }
-
-    function deleteDormRow(storageKey, index, tableId) {
-        const data = getData(storageKey, []);
-        data.splice(index, 1);
-        saveData(storageKey, data);
-        renderDormTable(tableId, storageKey);
-        addLog(`Deleted row from ${tableId === 'girlsDormTable' ? "Girls' Dorm" : "Boys' Dorm"}`);
-    }
-
-    const defaultSchedule = [
-        { time: '07:00 AM', name: 'Wake-up Time' },
-        { time: '07:30 AM', name: 'Breakfast' },
-        { time: '08:30 AM', name: 'Period 1' },
-        { time: '09:30 AM', name: 'Period 2' },
-        { time: '10:30 AM', name: 'Period 3' },
-        { time: '11:30 AM', name: 'Period 4' },
-        { time: '12:30 PM', name: 'Lunch Time' },
-        { time: '01:30 PM', name: 'Period 5' },
-        { time: '02:30 PM', name: 'Period 6' },
-        { time: '03:30 PM', name: 'Period 7' },
-        { time: '04:30 PM', name: 'After School' },
-        { time: '06:00 PM', name: 'Dinner Time' },
-        { time: '10:00 PM', name: 'Lights Out' }
-    ];
-
-    let selectedSwapIndex = null;
-
-    function loadScheduleAndSideNotes() {
-        const grade = document.getElementById('gradeSelect').value;
-        selectedSwapIndex = null;
-
-        const key = 'schedule_g' + grade;
-        const tbody = document.querySelector('#scheduleTable tbody');
-        let schedule = getData(key, defaultSchedule);
-
-        if (!Array.isArray(schedule)) schedule = defaultSchedule;
-
-        tbody.innerHTML = '';
-        schedule.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="text-align: center; vertical-align: middle;">
-                    <button class="btn-swap ${selectedSwapIndex === index ? 'selected' : ''}" 
-                            title="Click to select and swap with another row" 
-                            onclick="handleSwapClick(${index})">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                    </button>
-                </td>
-                <td><textarea class="auto-expand" oninput="autoResizeTextarea(this); debouncedSaveScheduleItem(${index}, 'time', this.value)">${escapeHtml(item.time || '')}</textarea></td>
-                <td><textarea class="auto-expand" oninput="autoResizeTextarea(this); debouncedSaveScheduleItem(${index}, 'name', this.value)">${escapeHtml(item.name || '')}</textarea></td>
-                <td style="vertical-align: middle; text-align: center;"><button class="btn btn-danger" onclick="deleteScheduleItem(${index})">X</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        ['sideBring', 'sideAnnounce', 'sideTodo', 'sideTodoGreen'].forEach(id => {
-            const sideKey = `side_${id}_g${grade}`;
-            const elem = document.getElementById(id);
-            if (elem) {
-                elem.value = getData(sideKey, '');
-                autoResizeTextarea(elem, 80);
-            }
-        });
-
-        resizeAllTextareas();
-    }
-
-    function handleSwapClick(index) {
-        if (selectedSwapIndex === null) {
-            selectedSwapIndex = index;
-            highlightSwapButtons();
-        } else if (selectedSwapIndex === index) {
-            selectedSwapIndex = null;
-            highlightSwapButtons();
-        } else {
-            const grade = document.getElementById('gradeSelect').value;
-            const key = 'schedule_g' + grade;
-            let schedule = getData(key, defaultSchedule);
-
-            const temp = schedule[selectedSwapIndex];
-            schedule[selectedSwapIndex] = schedule[index];
-            schedule[index] = temp;
-
-            saveData(key, schedule);
-            addLog(`Swapped Grade ${grade} schedule items (Slot ${selectedSwapIndex + 1} & Slot ${index + 1})`);
-            selectedSwapIndex = null;
-            loadScheduleAndSideNotes();
-        }
-    }
-
-    function highlightSwapButtons() {
-        const buttons = document.querySelectorAll('#scheduleTable .btn-swap');
-        buttons.forEach((btn, idx) => {
-            if (idx === selectedSwapIndex) btn.classList.add('selected');
-            else btn.classList.remove('selected');
-        });
-    }
-
-    function saveScheduleItem(index, field, value) {
-        const grade = document.getElementById('gradeSelect').value;
-        const key = 'schedule_g' + grade;
-        let schedule = getData(key, defaultSchedule);
-        if (schedule[index]) {
-            schedule[index][field] = value;
-            saveData(key, schedule);
-            addLog(`Updated Grade ${grade} schedule slot ${index + 1}`);
-        }
-    }
-
-    const debouncedSaveScheduleItem = debounce((idx, fld, val) => saveScheduleItem(idx, fld, val), 300);
-
-    function addScheduleRow() {
-        const grade = document.getElementById('gradeSelect').value;
-        const key = 'schedule_g' + grade;
-        let schedule = getData(key, defaultSchedule);
-        schedule.push({ time: '', name: '' });
-        saveData(key, schedule);
-        loadScheduleAndSideNotes();
-        addLog(`Added new schedule slot for Grade ${grade}`);
-    }
-
-    function deleteScheduleItem(index) {
-        const grade = document.getElementById('gradeSelect').value;
-        const key = 'schedule_g' + grade;
-        let schedule = getData(key, defaultSchedule);
-        schedule.splice(index, 1);
-        saveData(key, schedule);
-        loadScheduleAndSideNotes();
-        addLog(`Deleted schedule slot from Grade ${grade}`);
-    }
-
-    function saveSideContent(fieldId) {
-        const grade = document.getElementById('gradeSelect').value;
-        const sideKey = `side_${fieldId}_g${grade}`;
-        const val = document.getElementById(fieldId).value;
-        saveData(sideKey, val);
-        addLog(`Updated sticky note (${fieldId}) for Grade ${grade}`);
-    }
-
-    const debouncedSaveSideContent = debounce((id) => saveSideContent(id), 300);
-
-    let currentCalendarDate = new Date();
-
-    function renderCalendar() {
-        const monthYearElem = document.getElementById('calendarMonthYear');
-        const daysElem = document.getElementById('calendarDays');
-        daysElem.innerHTML = '';
-
-        const year = currentCalendarDate.getFullYear();
-        const month = currentCalendarDate.getMonth();
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        monthYearElem.textContent = `${new Date(year, month).toLocaleString('en-US', { month: 'long' })} ${year}`;
-
-        const calDataKey = `calendar_${year}_${month}`;
-        if (window.listenCalendarData) window.listenCalendarData(calDataKey);
-        const savedCalData = getData(calDataKey, {});
-
-        for (let i = 0; i < firstDay; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'calendar-day';
-            emptyCell.style.opacity = '0.4';
-            daysElem.appendChild(emptyCell);
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayCell = document.createElement('div');
-            dayCell.className = 'calendar-day';
-            const val = savedCalData[day] || '';
-
-            dayCell.innerHTML = `
-                <div class="date-num">${day}</div>
-                <textarea class="auto-expand" style="padding:2px; min-height:45px; border:none; background:transparent;" oninput="autoResizeTextarea(this, 45); debouncedSaveCalendarEvent(${year}, ${month}, ${day}, this.value)">${escapeHtml(val)}</textarea>
-            `;
-            daysElem.appendChild(dayCell);
-        }
-        resizeAllTextareas();
-    }
-
-    function saveCalendarEvent(year, month, day, text) {
-        const calDataKey = `calendar_${year}_${month}`;
-        const savedCalData = getData(calDataKey, {});
-        savedCalData[day] = text;
-        saveData(calDataKey, savedCalData);
-        addLog(`Updated calendar event on ${month + 1}/${day}/${year}`);
-    }
-
-    const debouncedSaveCalendarEvent = debounce((y, m, d, txt) => saveCalendarEvent(y, m, d, txt), 300);
-
-    function changeMonth(direction) {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
-        renderCalendar();
-    }
-
-    function exportData() {
-        if (!isAdminUser()) return;
-        const exportObj = {};
-        const keys = Object.keys(localStorage).filter(k => k.startsWith('olivet_'));
-        keys.forEach(key => exportObj[key] = localStorage.getItem(key));
-        
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
-        const downloadAnchor = document.createElement('a');
-        const today = new Date().toISOString().slice(0,10);
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `olivet_scheduler_backup_${today}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        addLog('Downloaded data backup');
-    }
-
-    function importData(event) {
-        if (!isAdminUser()) return;
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const importedObj = JSON.parse(e.target.result);
-
-                // A valid backup is an object containing olivet_* localStorage entries.
-                // localStorage values are strings, so individual values are not required
-                // to be JSON. This also keeps older/manual backups restorable.
-                if (
-                    typeof importedObj !== 'object' ||
-                    importedObj === null ||
-                    Array.isArray(importedObj)
-                ) {
-                    throw new Error('Invalid backup object');
-                }
-
-                const backupEntries = Object.entries(importedObj).filter(
-                    ([key, value]) => key.startsWith('olivet_') && typeof value === 'string'
-                );
-
-                if (backupEntries.length === 0) {
-                    throw new Error('No Olivet Scheduler backup entries found');
-                }
-
-                if (confirm('Importing this file will overwrite existing data. Continue?')) {
-                    // Restore localStorage first. One bad/legacy entry must not abort
-                    // the entire restore operation.
-                    backupEntries.forEach(([key, value]) => {
-                        localStorage.setItem(key, value);
-                    });
-
-                    // Sync valid scheduler values to Firestore. Browser-only state is
-                    // intentionally kept local and is not uploaded as shared data.
-                    if (window.dbSaveData) {
-                        const excludedSyncKeys = new Set([
-                            'auth_user',
-                            'user_id',
-                            'activity_logs',
-                            'dark_mode',
-                            'tutorial_completed',
-                            'undo_backup'
-                        ]);
-
-                        for (const [key, value] of backupEntries) {
-                            const cleanKey = key.replace(/^olivet_/, '');
-                            if (excludedSyncKeys.has(cleanKey)) continue;
-
-                            try {
-                                const parsedValue = JSON.parse(value);
-                                await window.dbSaveData(cleanKey, parsedValue);
-                            } catch (parseError) {
-                                console.warn(
-                                    `Skipping Firestore sync for non-JSON backup entry "${key}".`,
-                                    parseError
-                                );
-                            }
-                        }
-                    }
-
-                    addLog('Restored data from backup file');
-                    alert(`Data successfully restored! (${backupEntries.length} items)`);
-                    location.reload();
-                }
-            } catch (err) {
-                console.error('Backup restore error:', err);
-                alert(
-                    'Invalid JSON backup file or corrupted data.\n\n' +
-                    'Please make sure you selected an Olivet Scheduler .json backup file.'
-                );
-            } finally {
-                // Allow selecting the same backup file again.
-                event.target.value = '';
-            }
-        };
-
-        reader.onerror = function() {
-            alert('Could not read the backup file.');
-            event.target.value = '';
-        };
-
-        reader.readAsText(file);
-    }
-
-    function resetAllData() {
-        if (!isAdminUser()) return;
-        if (confirm('Are you sure you want to delete ALL scheduler data? This cannot be undone.')) {
-            const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('olivet_') && k !== 'olivet_undo_backup');
-            const backupObj = {};
-
-            keysToRemove.forEach(key => {
-                backupObj[key] = localStorage.getItem(key);
-                localStorage.removeItem(key);
-                const cleanKey = key.replace('olivet_', '');
-                if (window.dbSaveData) {
-                    window.dbSaveData(cleanKey, null);
-                }
-            });
-
-            localStorage.setItem('olivet_undo_backup', JSON.stringify(backupObj));
-            addLog('Performed Reset All Data');
-            alert('All data has been reset! You can click "Undo Reset" to recover if needed.');
-            location.reload();
-        }
-    }
-
-    function undoResetData() {
-        if (!isAdminUser()) return;
-        const undoData = localStorage.getItem('olivet_undo_backup');
-        if (!undoData) {
-            alert('No backup found to restore.');
-            return;
-        }
-
-        if (confirm('Restore previous data before the last reset?')) {
-            try {
-                const parsed = JSON.parse(undoData);
-                Object.keys(parsed).forEach(key => {
-                    localStorage.setItem(key, parsed[key]);
-                    const cleanKey = key.replace('olivet_', '');
-                    if (window.dbSaveData) {
-                        window.dbSaveData(cleanKey, JSON.parse(parsed[key]));
-                    }
-                });
-                localStorage.removeItem('olivet_undo_backup');
-                addLog('Performed Undo Reset');
-                alert('Reset undone! Your data has been restored.');
-                location.reload();
-            } catch (e) {
-                alert('Failed to restore data.');
-            }
-        }
-    }
-
-    // TUTORIAL SETUP
-    const tutorialSteps = [
-        {
-            target: 'header',
-            title: 'Welcome to Olivet Scheduler!',
-            text: 'Here you can toggle Dark Mode and manage your daily academic schedules smoothly.'
-        },
-        {
-            target: '.quick-nav .nav-row:first-child',
-            title: 'Quick Navigation',
-            text: 'Jump directly to any section using these quick link buttons.'
-        },
-        {
-            target: '.nav-row-actions',
-            title: 'Quick Actions',
-            text: 'Access tutorials, print functions, and administrator management options here.'
-        },
-        {
-            target: '#sec-meals',
-            title: 'Weekly Meal Menu & Ratings',
-            text: 'Check the weekly meal menu. Try clicking on any emoji sticker (😋, 😐, 😭) below a menu item to submit your vote!'
-        },
-        {
-            target: '#sec-cooking',
-            title: 'Weekend Cooking & Cleaning',
-            text: 'Record cooking teams and cleaning assignments. You can enter assigned students, duties, and specific schedules here.'
-        },
-        {
-            target: '.schedule-main',
-            title: 'Class Schedule & Swap Feature',
-            text: 'Select your grade to edit class periods. Click the red Swap button (🔄) on any row, then click another row to swap their order instantly!'
-        },
-        {
-            target: '.schedule-side',
-            title: 'Interactive Sticky Notes',
-            text: 'Use these notes to record items to bring tomorrow, school announcements, upcoming project deadlines, and personal to-do lists.'
-        },
-        {
-            target: '#sec-calendar',
-            title: 'School Calendar',
-            text: 'Check and manage all school events and monthly schedules here.'
-        },
-        {
-            target: 'header',
-            title: 'Blessing & Final Step',
-            text: 'This is a space for all of us to record and share our schedules together. We hope this makes checking your schedules much more convenient and meaningful! Amen?',
-            isFinalAmen: true
-        }
-    ];
-
-    let currentTutorialStep = 0;
-    let amenSkipState = 0;
-
-    function startTutorial() {
-        currentTutorialStep = 0;
-        amenSkipState = 0;
-        document.body.style.overflow = 'hidden'; 
-        document.getElementById('tutorialOverlay').style.display = 'block';
-        showTutorialStep(currentTutorialStep);
-    }
-
-    function showTutorialStep(stepIdx) {
-        const step = tutorialSteps[stepIdx];
-        const targetEl = document.querySelector(step.target);
-        
-        if (!targetEl) return;
-
-        const isScheduleStep = (step.target === '.schedule-main');
-        const elementRect = targetEl.getBoundingClientRect();
-        const absoluteElementTop = elementRect.top + window.pageYOffset;
-        
-        const scrollRatio = isScheduleStep ? 0.15 : 0.25;
-        const middleOffset = absoluteElementTop - (window.innerHeight * scrollRatio);
-
-        window.scrollTo({
-            top: Math.max(0, middleOffset),
-            behavior: 'smooth'
-        });
-
-        setTimeout(() => {
-            const rect = targetEl.getBoundingClientRect();
-            const spotlight = document.getElementById('tutorialSpotlight');
-            const popover = document.getElementById('tutorialPopover');
-            const inputArea = document.getElementById('tutInputArea');
-            const skipBtn = document.getElementById('tutSkipBtn');
-
-            const padding = 10;
-            spotlight.style.top = (rect.top - padding) + 'px';
-            spotlight.style.left = (rect.left - padding) + 'px';
-            spotlight.style.width = (rect.width + padding * 2) + 'px';
-            spotlight.style.height = (rect.height + padding * 2) + 'px';
-
-            document.getElementById('tutTitle').innerHTML = `<i class="fa-solid fa-lightbulb"></i> ${escapeHtml(step.title)}`;
-            document.getElementById('tutText').textContent = step.text;
-            document.getElementById('tutStepCount').textContent = `${stepIdx + 1} / ${tutorialSteps.length}`;
-
-            if (skipBtn) skipBtn.textContent = 'Skip';
-
-            if (step.isFinalAmen) {
-                amenSkipState = 0;
-                inputArea.innerHTML = `
-                    <div class="tutorial-input-group">
-                        <input type="text" id="amenInput" class="tutorial-input" placeholder="Amen!" onkeyup="handleAmenKey(event)" autofocus />
-                    </div>
-                `;
-                const nextBtn = document.getElementById('tutNextBtn');
-                nextBtn.textContent = 'Amen!';
-                nextBtn.onclick = checkAmenAndFinish;
-            } else {
-                inputArea.innerHTML = '';
-                const nextBtn = document.getElementById('tutNextBtn');
-                nextBtn.textContent = (stepIdx === tutorialSteps.length - 1) ? 'Done' : 'Next';
-                nextBtn.onclick = nextTutorialStep;
-            }
-
-            const popoverWidth = 340;
-            const popoverHeight = popover.offsetHeight || 250;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            let popLeft = rect.left + (rect.width / 2) - (popoverWidth / 2);
-            popLeft = Math.max(15, Math.min(popLeft, viewportWidth - popoverWidth - 15));
-
-            let popTop;
-
-            if (isScheduleStep) {
-                popTop = rect.top - popoverHeight - 20;
-                if (popTop < 20) {
-                    popTop = Math.max(20, rect.top + 20); 
-                }
-            } else {
-                const spaceBelow = viewportHeight - rect.bottom;
-                const spaceAbove = rect.top;
-
-                if (spaceBelow >= popoverHeight + 20 && rect.top < viewportHeight * 0.5) {
-                    popTop = rect.bottom + 15;
-                } else if (spaceAbove >= popoverHeight + 20) {
-                    popTop = rect.top - popoverHeight - 15;
-                } else {
-                    popTop = Math.max(20, (viewportHeight - popoverHeight) / 2);
-                }
-            }
-
-            popTop = Math.max(20, Math.min(popTop, viewportHeight - popoverHeight - 20));
-
-            popover.style.top = popTop + 'px';
-            popover.style.left = popLeft + 'px';
-            
-            if (step.isFinalAmen) {
-                const amenIn = document.getElementById('amenInput');
-                if (amenIn) amenIn.focus();
-            }
-        }, 400);
-    }
-
-    function handleSkipClick() {
-        const step = tutorialSteps[currentTutorialStep];
-        
-        if (step && step.isFinalAmen) {
-            const skipBtn = document.getElementById('tutSkipBtn');
-            if (amenSkipState === 0) {
-                amenSkipState = 1;
-                if (skipBtn) skipBtn.textContent = 'Are you sure?';
-            } else if (amenSkipState === 1) {
-                amenSkipState = 2;
-                if (skipBtn) skipBtn.textContent = 'Amen!';
-            } else if (amenSkipState === 2) {
-                endTutorial();
-            }
-        } else {
-            endTutorial();
-        }
-    }
-
-    function handleAmenKey(event) {
-        if (event.key === 'Enter') {
-            checkAmenAndFinish();
-        }
-    }
-
-    function checkAmenAndFinish() {
-        endTutorial();
-    }
-
-    function nextTutorialStep() {
-        currentTutorialStep++;
-        if (currentTutorialStep >= tutorialSteps.length) {
-            endTutorial();
-        } else {
-            showTutorialStep(currentTutorialStep);
-        }
-    }
-
-    function endTutorial() {
-        document.body.style.overflow = '';
-        document.getElementById('tutorialOverlay').style.display = 'none';
-        saveData('tutorial_completed', true);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        initTheme();
-        initBibleVerse();
-        initAuthUI();
-        initMeals();
-        initCooking();
-        initCleaning();
-        initDormTables();
-        loadScheduleAndSideNotes();
-        renderCalendar();
-        renderLogs();
-
-        window.addEventListener('resize', resizeAllTextareas);
-
-        // Keep a synchronous local snapshot of every textarea on each keystroke.
-        // This makes sharing/reloading safe even if the 300ms debounce has not fired yet.
-        document.addEventListener('input', (event) => {
-            if (event.target && event.target.tagName === 'TEXTAREA') {
-                const active = event.target;
-                // The normal debounced save remains responsible for Firestore.
-                // This handler intentionally does not guess the storage key.
-                // It only prevents browser-level accidental loss by marking the page dirty.
-                window.__olivetUnsavedInput = true;
-            }
-        });
-
-        window.addEventListener('beforeunload', () => {
-            // Give pending debounce callbacks their normal chance to finish.
-            // localStorage already contains the last committed value.
-        });
-    });
-</script>
-
-</body>
-</html>
+<div id="fade"></div>
+<div id="toasts"></div>
+<input type="file" id="importFileInput" style="display:none" accept=".json" onchange="importData(event)">
+
+<!-- Panel store: every card lives here until a panel shows it -->
+<div id="panelStore" class="hidden">
+
+  <div class="card" id="sec-meals"><h2><i class="fa-solid fa-utensils"></i> Weekly Meal Menu &amp; Sticker Ratings</h2>
+    <div class="meal-table-wrapper"><table class="meal-table"><thead><tr><th style="width:100px">Meal</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead><tbody id="mealTableBody"></tbody></table></div></div>
+
+  <div class="card" id="sec-cooking"><h2><i class="fa-solid fa-fire-burner"></i> Weekend Cooking Team (Sat - Sun)</h2><div class="grid-2" id="cookingGrid"></div></div>
+
+  <div class="card" id="sec-cafeteria-cleaning"><h2><i class="fa-solid fa-soap"></i> Cafeteria Cleaning Team (Mon - Sun)</h2><div class="grid-7" id="cleaningGrid"></div></div>
+
+  <div class="card" id="sec-dorm-cleaning"><h2><i class="fa-solid fa-broom"></i> Saturday Dorm Cleaning Team</h2>
+    <div class="grid-2" id="dormGrid">
+      <div id="dormGirlsCol"><h3 class="girls-header"><i class="fa-solid fa-person-dress"></i> Girls' Dormitory</h3>
+        <table class="table-custom" id="girlsDormTable"><thead><tr><th>Cleaning Area</th><th>Assigned Student</th><th style="width:40px"></th></tr></thead><tbody></tbody></table>
+        <button class="btn" style="margin-top:10px" onclick="addDormRow('girlsDormTable')">+ Add Row</button></div>
+      <div id="dormBoysCol"><h3 style="color:var(--primary-red);display:flex;gap:8px;align-items:center;margin-bottom:8px"><i class="fa-solid fa-person"></i> Boys' Dormitory</h3>
+        <table class="table-custom" id="boysDormTable"><thead><tr><th>Cleaning Area</th><th>Assigned Student</th><th style="width:40px"></th></tr></thead><tbody></tbody></table>
+        <button class="btn" style="margin-top:10px" onclick="addDormRow('boysDormTable')">+ Add Row</button></div>
+    </div></div>
+
+  <div class="card" id="sec-schedule"><h2><i class="fa-solid fa-pen-ruler"></i> Grade Class Schedule &amp; Sticky Notes</h2>
+    <div class="grade-selector"><label for="gradeSelect" style="margin:0">Select Grade:</label>
+      <select id="gradeSelect" onchange="loadScheduleAndSideNotes()"><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12" selected>Grade 12</option></select></div>
+    <div class="schedule-container">
+      <div class="schedule-main">
+        <table class="table-custom" id="scheduleTable"><thead><tr><th style="width:40px;text-align:center">Swap</th><th style="width:25%">Time</th><th>Period / Activity</th><th style="width:40px"></th></tr></thead><tbody></tbody></table>
+        <button class="btn" onclick="addScheduleRow()" style="margin-top:10px">+ Add Period/Slot</button></div>
+      <div class="schedule-side">
+        <div class="sticky-note sticky-yellow"><h3><i class="fa-solid fa-pen-clip"></i> Items to Bring Tomorrow</h3><textarea id="sideBring" class="auto-expand" placeholder="Type items to bring..." oninput="autoResizeTextarea(this);debouncedSaveSideContent('sideBring')"></textarea></div>
+        <div class="sticky-note sticky-blue"><h3><i class="fa-solid fa-thumbtack"></i> Announcements</h3><textarea id="sideAnnounce" class="auto-expand" placeholder="Type announcements here..." oninput="autoResizeTextarea(this);debouncedSaveSideContent('sideAnnounce')"></textarea></div>
+        <div class="sticky-note sticky-pink"><h3><i class="fa-solid fa-hourglass-half"></i> Upcoming Deadlines</h3><textarea id="sideTodo" class="auto-expand" placeholder="Type deadlines or notes..." oninput="autoResizeTextarea(this);debouncedSaveSideContent('sideTodo')"></textarea></div>
+        <div class="sticky-note sticky-green"><h3><i class="fa-solid fa-book-open-reader"></i> To Do List</h3><textarea id="sideTodoGreen" class="auto-expand" placeholder="Type your task list here..." oninput="autoResizeTextarea(this);debouncedSaveSideContent('sideTodoGreen')"></textarea></div>
+      </div></div></div>
+
+  <div class="card" id="sec-calendar"><h2><i class="fa-solid fa-calendar-days"></i> School Calendar</h2>
+    <div class="calendar-header"><button class="btn" onclick="changeMonth(-1)">&lt; Prev</button><h3 id="calendarMonthYear" style="color:var(--primary-red)"></h3><button class="btn" onclick="changeMonth(1)">Next &gt;</button></div>
+    <div class="calendar-grid"><div class="calendar-day-head">Sun</div><div class="calendar-day-head">Mon</div><div class="calendar-day-head">Tue</div><div class="calendar-day-head">Wed</div><div class="calendar-day-head">Thu</div><div class="calendar-day-head">Fri</div><div class="calendar-day-head">Sat</div></div>
+    <div class="calendar-grid" id="calendarDays"></div></div>
+
+  <div class="card" id="sec-today"><h2><i class="fa-solid fa-clipboard-list"></i> Today's Board</h2>
+    <div class="grade-selector"><label style="margin:0">Grade:</label><select id="todayGrade" onchange="VG.renderToday()"></select></div><div id="todayBody"></div></div>
+
+  <div class="card" id="sec-guestbook"><h2><i class="fa-solid fa-book"></i> Guestbook</h2>
+    <div class="gb-stamps" id="gbStamps"></div>
+    <textarea id="gbText" class="auto-expand" maxlength="140" placeholder="Leave a message for the village (max 140 chars)..." oninput="autoResizeTextarea(this)"></textarea>
+    <button class="btn" style="margin:8px 0" onclick="VG.postGuest()"><i class="fa-solid fa-feather"></i> Sign the Guestbook</button>
+    <div id="gbList"></div></div>
+
+  <div class="card" id="sec-log"><h2><i class="fa-solid fa-list-check"></i> Activity Log</h2><div id="logContainer"></div>
+    <button class="btn btn-danger admin-only" style="margin-top:8px" onclick="clearLogs()">Clear Logs</button></div>
+
+  <div class="card" id="sec-admin"><h2><i class="fa-solid fa-user-shield"></i> Admin Desk</h2>
+    <div class="adm-btns">
+      <button class="btn btn-danger" style="padding:8px 12px" onclick="resetAllData()"><i class="fa-solid fa-trash"></i> Reset All</button>
+      <button class="btn btn-danger" style="padding:8px 12px" onclick="undoResetData()"><i class="fa-solid fa-rotate-left"></i> Undo Reset</button>
+      <button class="btn btn-alt" style="padding:8px 12px" onclick="exportData()"><i class="fa-solid fa-download"></i> Backup Data</button>
+      <button class="btn btn-alt" style="padding:8px 12px" onclick="document.getElementById('importFileInput').click()"><i class="fa-solid fa-upload"></i> Restore Data</button>
+      <button class="btn btn-danger" style="padding:8px 12px" onclick="clearLogs()"><i class="fa-solid fa-eraser"></i> Clear Logs</button>
+    </div>
+    <label>Village Announcement (shown to everyone at the top)</label>
+    <input type="text" id="announceInput" maxlength="120" placeholder="e.g. Chapel moved to 10:30 tomorrow!">
+    <div class="adm-btns" style="margin-top:8px"><button class="btn" onclick="VG.setAnnouncement()">Publish</button><button class="btn btn-gray" onclick="VG.clearAnnouncement()">Remove</button></div></div>
+
+  <div class="card" id="sec-shop"><h2><i class="fa-solid fa-store"></i> Village Shop</h2><div id="shopBody"></div></div>
+  <div class="card" id="sec-leader"><h2><i class="fa-solid fa-trophy"></i> Arena Rankings</h2><div id="leaderBody"></div></div>
+  <div class="card" id="sec-house"><h2><i class="fa-solid fa-house"></i> My House</h2><div id="houseBody"></div></div>
+  <div class="card" id="sec-profile"><h2><i class="fa-solid fa-user"></i> Villager</h2><div id="profileBody"></div></div>
+  <div class="card" id="sec-wardrobe"><h2><i class="fa-solid fa-shirt"></i> Character</h2><div id="wardrobeBody"></div></div>
+  <div class="card" id="sec-guide"><h2><i class="fa-solid fa-lightbulb"></i> Tutorial</h2><div id="guideBody"></div></div>
+</div>
