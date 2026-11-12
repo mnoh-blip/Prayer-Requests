@@ -217,6 +217,11 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
 .pt-opt.sel{background:var(--primary-red);color:#fff}
 .pt-dex{display:flex;gap:10px;flex-wrap:wrap}.pt-dex>div{text-align:center;font-size:.72rem;width:64px}.pt-dex canvas{image-rendering:pixelated;display:block;margin:0 auto}
 .pt-empty{padding:14px;text-align:center;opacity:.85;line-height:1.6}
+.hbtn{flex-direction:column;gap:2px;width:50px;height:50px;font-size:1.05rem;line-height:1}
+.hbtn small{font-size:.56rem;font-weight:700;line-height:1;color:var(--text-color);white-space:nowrap}
+.hbtn:hover i,.hbtn:hover small{color:#fff!important}
+.pet-name-box{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:8;padding:14px 18px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;min-width:230px}
+.pet-name-box canvas{image-rendering:pixelated}.pet-name-box input{width:100%;padding:7px 10px;border:3px solid #2a1210;border-radius:4px;font-size:1rem;text-align:center}
 /* Classic view */
 #classicView{position:fixed;inset:0;z-index:20;background:var(--bg-body-red);overflow:auto;padding:20px}
 .classic-top{max-width:1200px;margin:0 auto 18px;background:linear-gradient(135deg,#c0392b,#78281f);color:#fff;padding:18px 22px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -254,16 +259,16 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
   <div id="announceBar" class="hud hidden"><i class="fa-solid fa-bullhorn"></i> <span id="announceText"></span></div>
 
   <div id="hudBtns" class="hud">
-    <button class="hbtn" id="btnToday" title="Today's Board"><i class="fa-solid fa-clipboard-list"></i></button>
-    <button class="hbtn" id="btnWardrobe" title="Character"><i class="fa-solid fa-shirt"></i></button>
-    <button class="hbtn" id="btnPets" title="Monster Den"><i class="fa-solid fa-paw"></i></button>
-    <button class="hbtn" id="btnGuide" title="Tutorial"><i class="fa-solid fa-circle-question"></i></button>
-    <button class="hbtn" id="btnClassic" title="Classic list view"><i class="fa-solid fa-table-list"></i></button>
-    <button class="hbtn" id="btnNight" title="Day / Night"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
-    <button class="hbtn" id="btnSound" title="Sound"><i class="fa-solid fa-volume-high" id="soundIcon"></i></button>
-    <button class="hbtn" id="btnPrint" title="Print"><i class="fa-solid fa-print"></i></button>
-    <button class="hbtn" id="btnLog" title="Activity Log"><i class="fa-solid fa-list-check"></i></button>
-    <button class="hbtn" id="btnLogout" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+    <button class="hbtn" id="btnToday" title="Today's Board"><i class="fa-solid fa-clipboard-list" style="color:#2e9e5b"></i><small>Board</small></button>
+    <button class="hbtn" id="btnWardrobe" title="Character"><i class="fa-solid fa-shirt" style="color:#8e44ad"></i><small>Style</small></button>
+    <button class="hbtn" id="btnPets" title="Monster Den"><i class="fa-solid fa-paw" style="color:#e67e22"></i><small>Pets</small></button>
+    <button class="hbtn" id="btnGuide" title="Tutorial"><i class="fa-solid fa-circle-question" style="color:#2980b9"></i><small>Help</small></button>
+    <button class="hbtn" id="btnClassic" title="Classic list view"><i class="fa-solid fa-calendar-days" style="color:#16a085"></i><small>Schedule</small></button>
+    <button class="hbtn" id="btnNight" title="Day / Night"><i class="fa-solid fa-moon" id="themeIcon" style="color:#5c6bc0"></i><small>Day/Night</small></button>
+    <button class="hbtn" id="btnSound" title="Sound"><i class="fa-solid fa-volume-high" id="soundIcon" style="color:#d81b60"></i><small>Sound</small></button>
+    <button class="hbtn" id="btnPrint" title="Print"><i class="fa-solid fa-print" style="color:#546e7a"></i><small>Print</small></button>
+    <button class="hbtn" id="btnLog" title="Activity Log"><i class="fa-solid fa-clock-rotate-left" style="color:#795548"></i><small>Log</small></button>
+    <button class="hbtn" id="btnLogout" title="Logout"><i class="fa-solid fa-right-from-bracket" style="color:#c0392b"></i><small>Exit</small></button>
   </div>
 
   <div id="chatBox" class="hud">
@@ -2010,6 +2015,8 @@ function render(t) {
     room.npcs.forEach(n => { addActor(n, n.look, n.dir, 0, n.y); labels.push({ x: n.x, y: n.y, name: n.name, col: '#9fe8ff', npc: true }); });
     remotes.forEach(p => { addActor(p, p.look, p.rdir || 'down', p.fr || 0, p.ry); labels.push({ x: p.rx, y: p.ry, name: p.name, admin: p.admin, p }); });
     list.push({ z: ME.y, d: () => drawChar(ctx, ME.x, ME.y, ME.look, ME.dir, ME.fr || 0) });
+    petFollowPush(list, t);
+    if (petFollow.id) { const pd = petById(ME.fav); if (pd) labels.push({ x: petFollow.x, y: petFollow.y, off: 27, name: pd.nick, col: '#ffe9a8', npc: true }); }
     labels.push({ x: ME.x, y: ME.y, name: ME.name, admin: ME.admin, me: true, p: ME });
     if (room.mons) room.mons.forEach(m => { if (!m.alive) return; if (m.x < x0 || m.x > x1 || m.y < y0 || m.y > y1) return; list.push({ z: m.y, d: () => { const big = m.id === 'dragon' ? 2 : 1, bob = Math.sin(t * 4 + m.hx) * 1; ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(m.x - 6 * big, m.y - 1, 12 * big, 3); ctx.drawImage(monCanvas(m.id), m.x - 8 * big, m.y - 15 * big + bob, 16 * big, 16 * big); } }); });
     list.sort((a, b) => a.z - b.z).forEach(e => e.d());
@@ -2026,7 +2033,7 @@ function render(t) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     const fs = Math.round(Math.max(11 * DPR, 3.4 * S)), now = Date.now();
     labels.forEach(L => {
-        const sx = (L.x - camX) * S, bob = Math.sin(t * 2.2 + (L.x % 7)) * S * .8, sy = (L.y - camY - 28) * S + bob;
+        const sx = (L.x - camX) * S, bob = Math.sin(t * 2.2 + (L.x % 7)) * S * .8, sy = (L.y - camY - (L.off || 28)) * S + bob;
         if (sx < -100 || sx > cw + 100 || sy < -60 || sy > ch + 100) return;
         const nm = (L.admin ? '👑 ' : '') + (L.name || '?');
         drawTag(nm, sx, sy, fs, L.admin ? '#ffd400' : L.me ? '#b8ffb0' : L.col || '#ffffff');
@@ -2681,6 +2688,17 @@ async function oliveThrow() {
     bLog(['Oh no! It broke free right away!', 'It popped out! Almost had it...', 'So close!! It escaped at the last moment!'][shakes]);
     await sleep(450); return false;
 }
+function askPetName(pet) {
+    return new Promise(res => {
+        const box = document.createElement('div'); box.className = 'pet-name-box px-panel';
+        box.innerHTML = `<div class="nm">Name your new friend!</div><canvas></canvas><input type="text" maxlength="12" placeholder="${escapeHtml(pet.nick)}"><div><button class="btn">OK</button> <button class="btn btn-gray">Skip</button></div>`;
+        petDraw(box.querySelector('canvas'), pet, 64);
+        const inp = box.querySelector('input'), done = ok => { if (ok) pet.nick = cleanNick(inp.value) || pet.nick; box.remove(); res(); };
+        const bs = box.querySelectorAll('button'); bs[0].onclick = () => done(true); bs[1].onclick = () => done(false);
+        inp.onkeydown = e => { if (e.key === 'Enter') done(true); };
+        $('battle').appendChild(box); setTimeout(() => inp.focus(), 60);
+    });
+}
 async function petCaught() {
     const m = pve.m, base = MON[m.id];
     const pet = { id: petId(), type: m.id, nick: base.name, lv: Math.max(1, Math.ceil(m.lv / 2)), xp: 0, joy: 20, hat: 'none', hue: 0, spark: false };
@@ -2690,8 +2708,27 @@ async function petCaught() {
     let up = false; while (ME.xp >= xpNeed(ME.lv)) { ME.xp -= xpNeed(ME.lv); ME.lv++; up = true; }
     if (up) { ME.hp = maxHp(); ME.mp = maxMp(); bLog(`LEVEL UP! You are now level ${ME.lv}!`); }
     petWinHook(xp, false);
+    await askPetName(pet);
     m.alive = false; m.respawnAt = Date.now() + (m.id === 'dragon' ? 240000 : 25000);
     saveProfile(); pveRender(); await sleep(2100); endPvE('win');
+}
+
+/* ---------- partner monster follows you around the village ---------- */
+const petFollow = { id: null, room: null, x: 0, y: 0, t: 0, trail: [], mv: false };
+function petFollowPush(list, t) {
+    const d = petById(ME.fav); if (!d || !room) { petFollow.id = null; return; }
+    const f = petFollow, dt = clamp(t - f.t, 0, .1); f.t = t;
+    if (f.id !== d.id || f.room !== ME.room || Math.hypot(ME.x - f.x, ME.y - f.y) > 160) { f.id = d.id; f.room = ME.room; f.x = ME.x - 12; f.y = ME.y; f.trail = []; f.mv = false; }
+    const lastT = f.trail[f.trail.length - 1];
+    if (!lastT || Math.hypot(ME.x - lastT.x, ME.y - lastT.y) > 3) { f.trail.push({ x: ME.x, y: ME.y }); if (f.trail.length > 7) f.trail.shift(); }
+    f.mv = false;
+    const tg = f.trail.length >= 6 ? f.trail[0] : null;
+    if (tg) {
+        const dx = tg.x - f.x, dy = tg.y - f.y, dist = Math.hypot(dx, dy);
+        if (dist > 1.5) { const step = Math.min(dist, (50 + dist * 3) * dt); f.x += dx / dist * step; f.y += dy / dist * step; f.mv = true; }
+    }
+    const sp = petSprite(d.type, d.hat || 'none', d.spark, d.hue || 0), x = f.x, y = f.y, hop = f.mv ? Math.abs(Math.sin(t * 12)) * 2 : Math.sin(t * 3) * .5;
+    list.push({ z: y, d: () => { ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(x - 5, y - 1, 10, 3); ctx.drawImage(sp, Math.round(x - 8), Math.round(y - 15 - PET_PAD - hop)); } });
 }
 
 /* ---------- Monster Den panel (raise & decorate) ---------- */
