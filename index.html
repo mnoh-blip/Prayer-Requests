@@ -104,8 +104,8 @@ footer{padding-bottom:36px;color:var(--muted);font-size:.8125rem;display:flex;ga
 @keyframes rise{from{opacity:0;transform:translateY(12px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 @media(prefers-reduced-motion:reduce){.ch,.wd,.ilogo,.iref,.ienter,.iskip{animation:none!important}}
 /* flight */
-#fx{position:fixed;inset:0;z-index:50;display:none;overflow:hidden;background:linear-gradient(180deg,#bcd2f3 0,#e4eefb 55%,#f6f9fe 100%);opacity:0}
-#fx .cl{position:absolute;width:340px;height:90px;border-radius:60px;background:#fff;filter:blur(22px);opacity:.8}
+#fx{position:fixed;inset:0;z-index:50;display:none;overflow:hidden;background:#0b1530;opacity:0}
+#sc{position:absolute;inset:0;width:100%;height:100%}
 #stage{position:absolute;left:50%;top:50%;width:200px;height:240px;margin:-120px 0 0 -100px;perspective:900px}
 #paper{position:absolute;inset:0;transform-origin:50% 50%}
 .sheet{position:absolute;inset:0;background:#fff;padding:26px 20px;font-size:11px;box-shadow:0 20px 40px -12px rgba(14,26,51,.35);clip-path:polygon(0 0,200px 0,200px 0,200px 240px,0 240px,0 0)}
@@ -114,7 +114,6 @@ footer{padding-bottom:36px;color:var(--muted);font-size:.8125rem;display:flex;ga
 .tri{position:absolute;top:0;width:100px;height:100px;background:#fff;transform-style:preserve-3d;backface-visibility:visible}
 .tri.l{left:0;clip-path:polygon(0 0,100% 0,0 100%);transform-origin:100% 0}
 .tri.r{left:100px;clip-path:polygon(0 0,100% 0,100% 100%);transform-origin:0 0}
-#plane{position:absolute;left:50%;top:50%;width:100px;height:100px;margin:-50px 0 0 -50px;opacity:0}
 @media(max-width:860px){.grid{grid-template-columns:1fr;gap:36px}.hero{position:static}.hero .logo{height:60px;margin-bottom:24px}.card{padding:24px 20px}}
 @media(max-width:420px){.grades{grid-template-columns:repeat(4,1fr)}.row{grid-template-columns:1fr}.row .f+.f{margin-top:18px}.who{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
@@ -228,9 +227,8 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
 </div>
 
 <div id="fx" aria-hidden="true">
-  <i class="cl" style="left:-6%;top:62%"></i><i class="cl" style="right:-8%;top:26%;width:420px"></i><i class="cl" style="left:30%;top:84%;width:480px"></i>
+  <canvas id="sc"></canvas>
   <div id="stage"><div id="paper"><div class="sheet" id="sheet"><strong id="fxName"></strong><i></i><i style="width:88%"></i><i></i><i style="width:64%"></i><i></i><i style="width:76%"></i></div><i class="tri l" id="t1"></i><i class="tri r" id="t2"></i></div></div>
-  <svg id="plane" viewBox="0 0 100 100"><path d="M50 2 6 70l44-12z" fill="#fff" stroke="#c4d2ee" stroke-width="1"/><path d="M50 2l44 68-44-12z" fill="#dbe6f9" stroke="#c4d2ee" stroke-width="1"/><path d="M50 2v56l-9 38z" fill="#9db4e3"/></svg>
 </div>
 
 <script type="module">
@@ -305,45 +303,121 @@ const COL="prayerRequests";
 $("grades").innerHTML=[6,7,8,9,10,11,12].map(g=>`<label><input type="radio" name="grade" value="${g}"><span>${g}</span></label>`).join("");
 $("req").addEventListener("input",e=>$("cnt").textContent=e.target.value.length);
 
-/* ---------- paper plane animation ---------- */
+/* ---------- paper plane: fold, then fly over sea and sky ---------- */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const anim=(el,kf,o)=>el.animate(kf,{fill:"forwards",easing:"cubic-bezier(.5,0,.2,1)",...o}).finished;
+const sc={c:$("sc"),raf:0,tm:0,last:0,fl:null,trail:[],rip:[],ripT:0,roll:0,pa:0,pl:null};
+const cx=sc.c.getContext("2d");
+const CL=Array.from({length:10},()=>({x:Math.random()*1.4-.1,y:.04+Math.random()*.4,s:.6+Math.random()*.9,sp:.006+Math.random()*.014}));
+const PUF=[[0,0,1],[.9,.15,.8],[-.9,.2,.75],[.4,-.35,.7],[-.45,-.3,.6]];
+const PLP=[["M50 2 6 70l44-12z","#ffffff"],["M50 2l44 68-44-12z","#dbe6f9"],["M50 2v56l-9 38z","#9db4e3"]].map(([d,c])=>[new Path2D(d),c]);
+const sm=v=>v*v*(3-2*v);
+const bz=(a,b,c,d,t)=>{const m=1-t;return[0,1].map(i=>m*m*m*a[i]+3*m*m*t*b[i]+3*m*t*t*c[i]+t*t*t*d[i])};
+const dbz=(a,b,c,d,t)=>{const m=1-t;return[0,1].map(i=>3*m*m*(b[i]-a[i])+6*m*t*(c[i]-b[i])+3*t*t*(d[i]-c[i]))};
+const S1=[[.5,.5],[.57,.43],[.56,.68],[.66,.7]],S2=[[.66,.7],[.76,.72],[.82,.56],[.89,.42]];
+function scSize(){const d=devicePixelRatio||1;sc.c.width=innerWidth*d;sc.c.height=innerHeight*d;cx.setTransform(d,0,0,d,0,0)}
+addEventListener("resize",()=>{if(sc.raf)scSize()});
+
+function scene(ts){
+  const dt=Math.min(.05,(ts-sc.last)/1000||.016);sc.last=ts;sc.tm+=dt;
+  const w=innerWidth,h=innerHeight,k=Math.min(1,Math.max(.6,w/900)),hz=h*.58,sx=w*.86,sy=h*.46,fast=sc.fl?2.4:1;
+  /* sky */
+  let g=cx.createLinearGradient(0,0,0,hz);g.addColorStop(0,"#4a82d4");g.addColorStop(.6,"#a7cbf5");g.addColorStop(1,"#fbe2c6");
+  cx.fillStyle=g;cx.fillRect(0,0,w,hz+2);
+  g=cx.createRadialGradient(sx,sy,0,sx,sy,h*.5);g.addColorStop(0,"rgba(255,248,222,1)");g.addColorStop(.12,"rgba(255,230,175,.75)");g.addColorStop(.4,"rgba(255,214,160,.22)");g.addColorStop(1,"rgba(255,214,160,0)");
+  cx.fillStyle=g;cx.fillRect(0,0,w,hz+2);
+  /* clouds */
+  for(const c of CL){
+    c.x-=c.sp*c.s*dt*fast;if(c.x<-.3)c.x=1.3;
+    const r=62*c.s*k,px=c.x*w,py=c.y*h;
+    for(const [ox,oy,rd] of PUF){
+      const X=px+ox*r,Y=py+oy*r,R=r*rd*1.1;
+      g=cx.createRadialGradient(X,Y,0,X,Y,R);g.addColorStop(0,"rgba(255,255,255,.85)");g.addColorStop(.6,"rgba(255,255,255,.4)");g.addColorStop(1,"rgba(255,255,255,0)");
+      cx.fillStyle=g;cx.beginPath();cx.arc(X,Y,R,0,6.2832);cx.fill();
+    }
+  }
+  /* sea */
+  g=cx.createLinearGradient(0,hz,0,h);g.addColorStop(0,"#7fa8d8");g.addColorStop(.25,"#3d74be");g.addColorStop(1,"#10305f");
+  cx.fillStyle=g;cx.fillRect(0,hz,w,h-hz);
+  g=cx.createLinearGradient(0,hz-30,0,hz+40);g.addColorStop(0,"rgba(255,236,214,0)");g.addColorStop(.5,"rgba(255,236,214,.55)");g.addColorStop(1,"rgba(255,236,214,0)");
+  cx.fillStyle=g;cx.fillRect(0,hz-30,w,70);
+  const rows=11;
+  for(let r=0;r<rows;r++){
+    const f=r/(rows-1),y0=hz+(h-hz)*Math.pow(f,1.7)+4,amp=1+f*7,wl=70+f*150,ph=sc.tm*fast*(.8+f*1.4)+r*1.9;
+    cx.beginPath();
+    for(let x=0;x<=w+10;x+=10){const y=y0+Math.sin(x/wl*6.2832+ph)*amp;x?cx.lineTo(x,y):cx.moveTo(x,y)}
+    cx.strokeStyle=`rgba(255,255,255,${.07+f*.16})`;cx.lineWidth=.8+f*1.6;cx.stroke();
+    cx.fillStyle=`rgba(255,240,205,${.65-f*.2})`;
+    for(let j=0;j<7;j++){
+      const x=sx+Math.sin(r*12.9+j*4.3+sc.tm*(.7+j*.13))*(20+f*170),l=(5+f*26)*Math.max(0,Math.sin(sc.tm*3+j+r));
+      cx.fillRect(x,y0+Math.sin(x/wl*6.2832+ph)*amp,l,1+f*1.5);
+    }
+  }
+  /* plane state */
+  if(sc.fl){
+    const f=sc.fl;let t=(ts-f.t0)/f.dur;
+    if(t>=1){sc.pl=null;sc.fl=null;f.res()}
+    else{
+      const u=t*.35+(.5-.5*Math.cos(Math.PI*t))*.65,first=u<.45,S=first?S1:S2,q=first?u/.45:(u-.45)/.55;
+      const p=bz(...S,q),d=dbz(...S,q);
+      let a=Math.atan2(d[0]*w,-d[1]*h)*sm(Math.min(1,u/.07))+Math.sin(sc.tm*8)*.02;
+      const da=(a-sc.pa)/dt;sc.pa=a;
+      sc.roll+=(Math.max(-.9,Math.min(.9,da*.22))-sc.roll)*.12;
+      const s=(first?1.3+.25*sm(u/.45):1.55-1.47*Math.pow(sm((u-.45)/.55),.8))*k;
+      sc.pl={x:p[0]*w,y:p[1]*h,a,s,al:Math.min(1,u/.05,(1-u)/.14),roll:sc.roll};
+      sc.trail.unshift({x:sc.pl.x,y:sc.pl.y,s});if(sc.trail.length>52)sc.trail.pop();
+      if(u>.36&&u<.6&&sc.tm-sc.ripT>.16){sc.ripT=sc.tm;sc.rip.push({x:sc.pl.x,y:sc.pl.y+36*s,age:0})}
+    }
+  }else if(sc.trail.length)sc.trail.pop();
+  /* ripples */
+  sc.rip=sc.rip.filter(r=>(r.age+=dt)<1.5);
+  for(const r of sc.rip){const rx=18+r.age*110;cx.strokeStyle=`rgba(255,255,255,${.55*(1-r.age/1.5)})`;cx.lineWidth=1.4;cx.beginPath();cx.ellipse(r.x,r.y,rx,rx*.22,0,0,6.2832);cx.stroke()}
+  /* contrail */
+  cx.lineCap="round";
+  for(let i=0;i<sc.trail.length-1;i++){
+    const a=sc.trail[i],b=sc.trail[i+1],f=1-i/sc.trail.length;
+    cx.strokeStyle=`rgba(255,255,255,${.5*f})`;cx.lineWidth=Math.max(.6,a.s*4*f);cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+  }
+  /* plane */
+  const P=sc.pl;
+  if(P){
+    if(P.y>hz-30){cx.fillStyle=`rgba(8,26,64,${.28*P.al})`;cx.beginPath();cx.ellipse(P.x,Math.max(P.y+48*P.s,hz+8),34*P.s,8*P.s,0,0,6.2832);cx.fill()}
+    cx.save();cx.globalAlpha=P.al;cx.translate(P.x,P.y);cx.rotate(P.a);
+    cx.scale(P.s*Math.max(.55,Math.cos(P.roll)),P.s);cx.translate(-50,-50);
+    cx.shadowColor="rgba(10,30,70,.35)";cx.shadowBlur=16;cx.shadowOffsetY=10;
+    for(const [pp,col] of PLP){cx.fillStyle=col;cx.fill(pp);cx.shadowColor="transparent"}
+    cx.strokeStyle="#b7c8ea";cx.lineWidth=1/P.s;cx.stroke(PLP[0][0]);cx.stroke(PLP[1][0]);
+    cx.restore();
+  }
+  sc.raf=requestAnimationFrame(scene);
+}
+const stopScene=()=>{cancelAnimationFrame(sc.raf);sc.raf=0;sc.fl=null;sc.pl=null;sc.trail=[];sc.rip=[]};
+
 async function fly(name,saved){
   const fx=$("fx");
   if(matchMedia("(prefers-reduced-motion:reduce)").matches){await saved;return}
   $("fxName").textContent=name;
-  [$("paper"),$("sheet"),$("t1"),$("t2"),$("plane")].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
-  fx.style.display="block";
-  await anim(fx,[{opacity:0},{opacity:1}],{duration:450});
+  [$("paper"),$("sheet"),$("t1"),$("t2")].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
+  $("paper").style.opacity=1;
+  fx.style.display="block";scSize();sc.last=performance.now();sc.raf=requestAnimationFrame(scene);
+  await anim(fx,[{opacity:0},{opacity:1}],{duration:600});
   await anim($("stage"),[{transform:"scale(.85) translateY(20px)",opacity:0},{transform:"scale(1)",opacity:1}],{duration:500});
   await wait(250);
   /* fold the top corners to the center line */
-  const full="polygon(0 0,200px 0,200px 0,200px 240px,0 240px,0 0)";
-  const cut="polygon(100px 0,100px 0,200px 100px,200px 240px,0 240px,0 100px)";
-  const d={duration:800};
+  const cut="polygon(100px 0,100px 0,200px 100px,200px 240px,0 240px,0 100px)",d={duration:800};
   await Promise.all([
     anim($("sheet"),[{clipPath:"polygon(0 0,200px 0,200px 100px,200px 240px,0 240px,0 100px)"},{clipPath:cut}],d),
     anim($("t1"),[{transform:"rotate3d(-1,1,0,0deg)",background:"#fff"},{transform:"rotate3d(-1,1,0,180deg)",background:"#e3ebf9"}],d),
     anim($("t2"),[{transform:"rotate3d(1,1,0,0deg)",background:"#fff"},{transform:"rotate3d(1,1,0,-180deg)",background:"#e3ebf9"}],d)
   ]);
   await wait(150);
-  /* fold in half */
   await anim($("paper"),[{transform:"scaleX(1)"},{transform:"scaleX(.3)"}],{duration:550});
-  /* it becomes a plane */
-  $("paper").style.opacity=0;
   await saved;                                   // never launch before the request is stored
-  const p=$("plane");
-  p.style.opacity=1;
-  await anim(p,[{transform:"scale(1.3) rotate(0)"},{transform:"scale(1.3) rotate(38deg)"}],{duration:420});
-  const w=innerWidth,h=innerHeight;
-  await anim(p,[
-    {transform:"translate(0,0) scale(1.3) rotate(38deg)",opacity:1},
-    {transform:`translate(${w*.12}px,${-h*.18}px) scale(1) rotate(42deg)`,opacity:1,offset:.35},
-    {transform:`translate(${w*.42}px,${-h*.62}px) scale(.5) rotate(48deg)`,opacity:1,offset:.8},
-    {transform:`translate(${w*.6}px,${-h*.95}px) scale(.12) rotate(52deg)`,opacity:0}
-  ],{duration:1900,easing:"cubic-bezier(.4,0,.8,.6)"});
-  await anim(fx,[{opacity:1},{opacity:0}],{duration:450});
-  fx.style.display="none";p.style.opacity=0;$("paper").style.opacity=1;
+  $("paper").style.opacity=0;
+  await new Promise(res=>{sc.pa=0;sc.roll=0;sc.fl={t0:performance.now(),dur:5200,res}});
+  await wait(600);
+  await anim(fx,[{opacity:1},{opacity:0}],{duration:600});
+  fx.style.display="none";stopScene();$("paper").style.opacity=1;
 }
 
 /* ---------- submit ---------- */
@@ -365,7 +439,7 @@ $("form").addEventListener("submit",async e=>{
     $("form").reset();$("cnt").textContent="0";
   }catch(err){
     console.error(err);
-    $("fx").style.display="none";
+    $("fx").style.display="none";stopScene();
     msg.textContent="Your request could not be sent. Please check your connection and try again.";
   }
   $("send").disabled=false;
