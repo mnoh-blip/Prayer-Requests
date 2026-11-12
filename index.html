@@ -190,6 +190,33 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
 #bActs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;min-width:260px}
 #bActs button{padding:10px 8px;border:3px solid #000;background:#fff;color:#2a1210;font-weight:700;border-radius:4px;cursor:pointer;font-size:.95rem}
 #bActs button:hover:not(:disabled){background:#ffe9a8}#bActs button:disabled{opacity:.45;cursor:default}
+/* === Monster Companions (added): olive catching, summoning, raising === */
+#bActs{max-height:200px;overflow-y:auto}
+.b-pet{bottom:106px;right:16px;min-width:200px;padding:6px 12px}.b-pet.hidden{display:none}
+.b-catch{font-size:.78rem;opacity:.85;margin-top:3px}
+#bPetC{bottom:8%;left:calc(14% + min(150px,28vw) - 6px);width:min(100px,19vw);height:auto}
+.pop{animation:popin .45s}@keyframes popin{0%{transform:scale(.1) translateY(30px);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.lunge{animation:lng .4s}@keyframes lng{0%,100%{transform:translateX(0)}40%{transform:translateX(80px) scale(1.1)}}
+.olive-fly,.olive-ball{position:absolute;font-size:2.2rem;line-height:1;z-index:6;pointer-events:none;text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.pt-top{display:flex;gap:16px;flex-wrap:wrap;font-weight:700;margin-bottom:10px}
+.pt-h{margin:14px 0 6px;color:var(--primary-red);font-size:1rem;border-bottom:2px solid var(--light-red);padding-bottom:4px}
+.pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.pt-card{border:3px solid #2a1210;border-radius:4px;background:var(--off-white);padding:6px;text-align:center;cursor:pointer;position:relative}
+.pt-card:hover{background:var(--light-red)}.pt-card.sel{outline:3px solid var(--primary-red);background:var(--light-red)}
+.pt-card canvas{image-rendering:pixelated;display:block;margin:0 auto}
+.pt-card .pn{font-weight:700;font-size:.8rem;word-break:break-all}.pt-card .pl{font-size:.72rem;opacity:.8}.pt-card .fav{position:absolute;top:2px;right:4px}
+.pt-det{display:flex;gap:16px;flex-wrap:wrap;padding:10px;border:3px solid #2a1210;border-radius:4px;background:var(--off-white)}
+.pt-prev canvas{background:linear-gradient(#bfe6ff,#c8efb0);border:3px solid var(--primary-red);border-radius:6px;image-rendering:pixelated;display:block}
+.pt-info{flex:1;min-width:230px}.pt-info small{display:block;opacity:.8;margin:2px 0}
+.pt-bar{position:relative;height:12px;background:#2a1a18;border:2px solid #000;border-radius:2px;overflow:hidden;margin:3px 0}
+.pt-bar i{position:absolute;left:0;top:0;bottom:0}.pt-bar.xp i{background:linear-gradient(#ffe066,#e0a800)}.pt-bar.joy i{background:linear-gradient(#ff9fc0,#e91e63)}
+.pt-bar span{position:absolute;inset:0;font-size:.62rem;color:#fff;text-align:center;line-height:8px;text-shadow:1px 1px 0 #000}
+.pt-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pt-deco{width:100%;margin-top:4px}.pt-deco .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:5px 0}.pt-deco .row>b{min-width:58px;font-size:.82rem;color:var(--primary-red)}
+.pt-opt{border:2px solid #2a1210;background:var(--bg-white);color:var(--text-color);border-radius:4px;padding:3px 8px;cursor:pointer;font-size:.8rem;font-weight:700}
+.pt-opt.sel{background:var(--primary-red);color:#fff}
+.pt-dex{display:flex;gap:10px;flex-wrap:wrap}.pt-dex>div{text-align:center;font-size:.72rem;width:64px}.pt-dex canvas{image-rendering:pixelated;display:block;margin:0 auto}
+.pt-empty{padding:14px;text-align:center;opacity:.85;line-height:1.6}
 /* Classic view */
 #classicView{position:fixed;inset:0;z-index:20;background:var(--bg-body-red);overflow:auto;padding:20px}
 .classic-top{max-width:1200px;margin:0 auto 18px;background:linear-gradient(135deg,#c0392b,#78281f);color:#fff;padding:18px 22px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -229,6 +256,7 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
   <div id="hudBtns" class="hud">
     <button class="hbtn" id="btnToday" title="Today's Board"><i class="fa-solid fa-clipboard-list"></i></button>
     <button class="hbtn" id="btnWardrobe" title="Character"><i class="fa-solid fa-shirt"></i></button>
+    <button class="hbtn" id="btnPets" title="Monster Den"><i class="fa-solid fa-paw"></i></button>
     <button class="hbtn" id="btnGuide" title="Tutorial"><i class="fa-solid fa-circle-question"></i></button>
     <button class="hbtn" id="btnClassic" title="Classic list view"><i class="fa-solid fa-table-list"></i></button>
     <button class="hbtn" id="btnNight" title="Day / Night"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
@@ -261,9 +289,11 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
 
 <div id="battle" class="hidden">
   <div class="b-field">
-    <div class="b-box px-panel b-foe"><div class="nm" id="bFoeName"></div><div class="bar hp"><i id="bFoeHp"></i><span id="bFoeHpT"></span></div></div>
+    <div class="b-box px-panel b-foe"><div class="nm" id="bFoeName"></div><div class="bar hp"><i id="bFoeHp"></i><span id="bFoeHpT"></span></div><div class="b-catch" id="bCatch"></div></div>
     <canvas id="bFoeC" class="b-sprite" width="96" height="96"></canvas>
     <canvas id="bMeC" class="b-sprite" width="96" height="120"></canvas>
+    <canvas id="bPetC" class="b-sprite hidden" width="96" height="132"></canvas>
+    <div class="b-box px-panel b-pet hidden" id="bPetBox"><div class="nm" id="bPetName"></div><div class="bar hp"><i id="bPetHp"></i><span id="bPetHpT"></span></div></div>
     <div class="b-box px-panel b-me"><div class="nm" id="bMeName"></div><div class="bar hp"><i id="bMeHp"></i><span id="bMeHpT"></span></div><div class="bar mp"><i id="bMeMp"></i><span id="bMeMpT"></span></div></div>
   </div>
   <div class="b-bottom"><div id="bLog"></div><div id="bActs"></div></div>
@@ -354,6 +384,7 @@ textarea.auto-expand.tag-elective{background-color:rgba(149,165,166,.3)!importan
   <div class="card" id="sec-house"><h2><i class="fa-solid fa-house"></i> My House</h2><div id="houseBody"></div></div>
   <div class="card" id="sec-profile"><h2><i class="fa-solid fa-user"></i> Villager</h2><div id="profileBody"></div></div>
   <div class="card" id="sec-wardrobe"><h2><i class="fa-solid fa-shirt"></i> Character</h2><div id="wardrobeBody"></div></div>
+  <div class="card" id="sec-pets"><h2><i class="fa-solid fa-paw"></i> Monster Den</h2><div id="petBody"></div></div>
   <div class="card" id="sec-guide"><h2><i class="fa-solid fa-lightbulb"></i> Tutorial</h2><div id="guideBody"></div></div>
 </div>
 <script type="module">
@@ -1225,6 +1256,7 @@ const PANELS = {
     house: { el: 'sec-house', title: 'My House', ico: 'fa-house', open: (o) => VG.buildHouseMenu(o) },
     profile: { el: 'sec-profile', title: 'Villager', ico: 'fa-user', open: (o) => VG.buildProfile(o) },
     wardrobe: { el: 'sec-wardrobe', title: 'Character Wardrobe', ico: 'fa-shirt', open: (o) => VG.buildWardrobe(o) },
+    pets: { el: 'sec-pets', title: 'Monster Den', ico: 'fa-paw', open: () => VG.buildPets() },
     guide: { el: 'sec-guide', title: 'Welcome to Olivet Village', ico: 'fa-lightbulb', open: () => VG.startTutorial() }
 };
 let currentPanel = null, panelLocked = false;
@@ -1600,6 +1632,7 @@ let S = 3, DPR = 1, VW = 0, VH = 0, camX = 0, camY = 0;
 const WEAPONS = [{ name: 'Wooden Sword', atk: 0, price: 0 }, { name: 'Iron Sword', atk: 5, price: 120 }, { name: 'Crystal Blade', atk: 12, price: 400 }];
 const ME = {
     uid: null, name: '', admin: false, look: cleanLook(), x: 0, y: 0, dir: 'down', moving: false, room: 'square',
+    olives: 5, pets: [], dex: {}, deco: [], fav: null,
     lv: 1, xp: 0, coins: 100, potions: 2, weapon: 0, wins: 0, losses: 0, plot: 0, grade: '', hp: 52, mp: 12, say: null, emo: null
 };
 const maxHp = lv => 40 + (lv || ME.lv) * 12;
@@ -2058,15 +2091,16 @@ function applyProfile(p) {
     ME.potions = (p.potions === undefined || isNaN(p.potions)) ? 2 : Math.max(0, p.potions | 0);
     ME.weapon = clamp(p.weapon | 0, 0, WEAPONS.length - 1); ME.wins = Math.max(0, p.wins | 0); ME.losses = Math.max(0, p.losses | 0);
     ME.plot = p.plot | 0; ME.grade = p.grade ? String(p.grade) : '';
+    petUnpack(p.petData);
     ME.hp = maxHp(); ME.mp = maxMp();
 }
 const pushProfile = debounce(() => {
     if (!ME.uid || !window.VDB) return;
-    VDB.setPlayer(ME.uid, { name: ME.name, admin: ME.admin, look: ME.look, lv: ME.lv, xp: ME.xp, coins: ME.coins, potions: ME.potions, weapon: ME.weapon, wins: ME.wins, losses: ME.losses, plot: ME.plot, grade: ME.grade });
+    VDB.setPlayer(ME.uid, { name: ME.name, admin: ME.admin, look: ME.look, lv: ME.lv, xp: ME.xp, coins: ME.coins, potions: ME.potions, weapon: ME.weapon, wins: ME.wins, losses: ME.losses, plot: ME.plot, grade: ME.grade, petData: JSON.stringify(petPack()) });
 }, 800);
 function saveProfile() {
     if (!ME.uid) return;
-    try { localStorage.setItem('olivetv_prof_' + ME.uid, JSON.stringify({ look: ME.look, lv: ME.lv, xp: ME.xp, coins: ME.coins, potions: ME.potions, weapon: ME.weapon, wins: ME.wins, losses: ME.losses, plot: ME.plot, grade: ME.grade })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem('olivetv_prof_' + ME.uid, JSON.stringify({ look: ME.look, lv: ME.lv, xp: ME.xp, coins: ME.coins, potions: ME.potions, weapon: ME.weapon, wins: ME.wins, losses: ME.losses, plot: ME.plot, grade: ME.grade, petData: JSON.stringify(petPack()) })); localStorage.setItem('olivetv_pets_' + ME.uid, JSON.stringify(petPack())); } catch (e) { /* ignore */ }
     pushProfile();
 }
 
@@ -2207,6 +2241,8 @@ function postGuest() {
 function buildShop() {
     const b = $('shopBody'); b.innerHTML = `<p style="margin-bottom:8px">Your coins: <b>🪙 ${ME.coins}</b> &nbsp;|&nbsp; Attack: <b>${atkOf()}</b> &nbsp;|&nbsp; Weapon: <b>${escapeHtml(WEAPONS[ME.weapon].name)}</b></p>`;
     const items = [{ n: '🧪 Healing Potion', d: `Restores 40 HP in battle. You have ${ME.potions}.`, p: 25, fn: () => { ME.potions++; } }];
+    items.push({ n: '🫒 Olive', d: `Throw it at a monster in battle to catch it! You have ${ME.olives}.`, p: OLIVE_PRICE, fn: () => { ME.olives++; } },
+        { n: '🫒 Olive ×5', d: 'A bundle of 5 olives (cheaper!).', p: OLIVE_PRICE * 5 - 10, fn: () => { ME.olives += 5; } });
     WEAPONS.forEach((w, i) => { if (i === 0) return; items.push({ n: '⚔ ' + w.name, d: `+${w.atk} attack`, p: w.price, owned: ME.weapon >= i, locked: ME.weapon < i - 1, fn: () => { ME.weapon = i; } }); });
     items.push({ n: '🛋 Furniture', d: 'Buy furniture inside your own house — press B to build!', info: true });
     items.forEach(it => {
@@ -2394,14 +2430,16 @@ function startPvE(m) {
     pve = { m, max: Math.round(base.hp * (1 + .3 * (lv - 1))), atk: Math.round(base.atk * (1 + .2 * (lv - 1))), busy: false }; pve.hp = pve.max;
     bShow(); bDrawMon(m.id); bDrawChar('bMeC', ME.look, 'up');
     $('bFoeName').textContent = `Lv${lv} ${base.name}`; $('bMeName').textContent = ME.name;
-    bLog(`A wild Lv${lv} ${base.name} appears!`); pveRender(); pveActions(false);
+    bLog(`A wild Lv${lv} ${base.name} appears!`); petStart(); pveRender(); pveActions(false);
 }
-function pveRender() { bBar('bFoeHp', 'bFoeHpT', pve.hp, pve.max, 'HP'); bBar('bMeHp', 'bMeHpT', ME.hp, maxHp(), 'HP'); bBar('bMeMp', 'bMeMpT', ME.mp, maxMp(), 'MP'); }
+function pveRender() { bBar('bFoeHp', 'bFoeHpT', pve.hp, pve.max, 'HP'); bBar('bMeHp', 'bMeHpT', ME.hp, maxHp(), 'HP'); bBar('bMeMp', 'bMeMpT', ME.mp, maxMp(), 'MP'); petUI(); }
 function pveActions(dis) {
     bActions([{ label: '⚔ Attack', disabled: dis, fn: () => pveAct('atk') }, { label: '✨ Holy Strike (5 MP)', disabled: dis, fn: () => pveAct('skill') },
-    { label: `🧪 Potion (${ME.potions})`, disabled: dis, fn: () => pveAct('pot') }, { label: '🏃 Run', disabled: dis, fn: () => pveAct('run') }]);
+    { label: `🧪 Potion (${ME.potions})`, disabled: dis, fn: () => pveAct('pot') }, { label: '🏃 Run', disabled: dis, fn: () => pveAct('run') },
+    { label: `🫒 Olive (${ME.olives})`, disabled: dis, fn: () => pveAct('olive') }, { label: pve && pve.pet ? '🐾 Swap Pet' : '🐾 Summon', disabled: dis, fn: () => pveAct('summonmenu') }]);
 }
 async function pveAct(a) {
+    if (a === 'summonmenu') { if (pve && !pve.busy) petPicker(); return; }
     if (!pve || pve.busy) return; pve.busy = true; pveActions(true);
     const base = MON[pve.m.id];
     if (a === 'atk' || a === 'skill') {
@@ -2411,13 +2449,25 @@ async function pveAct(a) {
     } else if (a === 'pot') {
         if (ME.potions <= 0) { bLog('No potions left! Buy some at the shop.'); pve.busy = false; pveActions(false); return; }
         ME.potions--; const h = Math.min(40, maxHp() - ME.hp); ME.hp += h; sfx('good'); bLog(`You drink a potion and recover ${h} HP.`); saveProfile();
+    } else if (a === 'olive') {
+        if (ME.olives <= 0) { bLog('No olives left! Buy some at the shop. 🫒'); pve.busy = false; pveActions(false); return; }
+        if (ME.pets.length >= PET_MAX) { bLog(`Your Monster Den is full (${PET_MAX})! Release a friend first.`); pve.busy = false; pveActions(false); return; }
+        ME.olives--; bLog('You throw an Olive! 🫒');
+        if (await oliveThrow()) { await petCaught(); return; }
+        saveProfile();
+    } else if (a.startsWith('summon:')) {
+        const sd = petById(a.slice(7));
+        if (!sd) { pve.busy = false; pveActions(false); return; }
+        if (ME.mp < 3) { bLog('Not enough MP to summon! (3 MP)'); pve.busy = false; pveActions(false); return; }
+        ME.mp -= 3; petSummon(sd, true); bLog(`Go, ${sd.nick}! 🐾`);
     } else if (a === 'run') {
         if (Math.random() < .6) { bLog('You got away safely!'); await sleep(700); endPvE('run'); return; }
         bLog("You couldn't escape!");
     }
     pveRender(); await sleep(650);
     if (pve.hp <= 0) { await pveWin(); return; }
-    const md = Math.max(1, Math.round(pve.atk * (.8 + Math.random() * .4))); ME.hp = Math.max(0, ME.hp - md); sfx('bad'); bShake('bMeC'); bFloat('bMeC', md); bLog(`${base.name} hits you for ${md}!`); pveRender(); await sleep(600);
+    await petTurn(); if (pve.hp <= 0) { await pveWin(); return; }
+    await foeStrike(base);
     if (ME.hp <= 0) { await pveLose(); return; }
     ME.mp = Math.min(maxMp(), ME.mp + 1); pve.busy = false; pveRender(); pveActions(false);
 }
@@ -2427,15 +2477,289 @@ async function pveWin() {
     let up = false; while (ME.xp >= xpNeed(ME.lv)) { ME.xp -= xpNeed(ME.lv); ME.lv++; up = true; }
     if (up) { ME.hp = maxHp(); ME.mp = maxMp(); bLog(`LEVEL UP! You are now level ${ME.lv}!`); sfx('good'); }
     pve.m.alive = false; pve.m.respawnAt = Date.now() + (pve.m.id === 'dragon' ? 120000 : 25000);
+    petWinHook(xp, true);
     saveProfile(); pveRender(); await sleep(1700); endPvE('win');
 }
 async function pveLose() {
     const lost = Math.floor(ME.coins * .1); ME.coins -= lost; bLog(`You were defeated... you dropped ${lost} coins.`); saveProfile(); await sleep(1600); endPvE('lose');
 }
 function endPvE(r) {
-    bHide(); const m = pve && pve.m; pve = null; update.cool = performance.now() / 1000 + 3;
+    bHide(); petReset(); const m = pve && pve.m; pve = null; update.cool = performance.now() / 1000 + 3;
     if (r === 'lose') { ME.hp = Math.ceil(maxHp() / 2); fadeTo(() => enterRoom('square')); }
     else if (r === 'run' && m) { ME.x = clamp(ME.x + (ME.x > m.x ? 14 : -14), 20, room.w * T - 20); if (blockedAt(ME.x, ME.y)) { ME.x = m.hx; ME.y = m.hy + 20; } }
+}
+
+/* =====================  MONSTER COMPANIONS (olive catching, summoning, raising)  ===================== */
+const PET_MAX = 12, PET_LV_MAX = 30, OLIVE_PRICE = 10, PET_PAD = 6, PET_SPARK_PRICE = 40;
+const PET_HATS = [
+    { k: 'none', n: 'None', p: 0 }, { k: 'bow', n: 'Bow', p: 0 }, { k: 'sprout', n: 'Sprout', p: 0 },
+    { k: 'party', n: 'Party Hat', p: 20 }, { k: 'flower', n: 'Flower', p: 20 }, { k: 'halo', n: 'Halo', p: 60 }, { k: 'crown', n: 'Crown', p: 80 }
+];
+const PET_HAT_BY = {}; PET_HATS.forEach(h => PET_HAT_BY[h.k] = h);
+const PET_INFO = {
+    slime: { rate: .55, skill: 'Gooey Hug', sd: 'Hits the foe and heals you a little.' },
+    bat: { rate: .45, skill: 'Drain Bite', sd: 'A strong bite that heals itself.' },
+    mushroom: { rate: .4, skill: 'Spore Cloud', sd: 'Weakens the foe for 2 turns.' },
+    ghost: { rate: .3, skill: 'Spook', sd: 'Scares the foe so it skips a turn.' },
+    golem: { rate: .22, skill: 'Stone Guard', sd: 'Takes the next hit for you at half damage.' },
+    dragon: { rate: .18, skill: 'Ember Breath', sd: 'A huge blast of fire!' }
+};
+const STAGE_NAME = ['', 'Little', 'Grown ★', 'Mighty ★★'], STAGE_MUL = [0, 1, 1.2, 1.45], STAGE_SIZE = [0, 1, 1.12, 1.25];
+const petId = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const petStage = p => p.lv >= 20 ? 3 : p.lv >= 10 ? 2 : 1;
+const petXpNeed = p => 12 * p.lv;
+const petById = id => ME.pets.find(p => p.id === id) || null;
+function cleanNick(s) { return cleanText(String(s || '').replace(/[<>&"']/g, '').trim().slice(0, 12)); }
+function petStats(p) {
+    const b = MON[p.type], mul = STAGE_MUL[petStage(p)], joy = 1 + Math.min(.2, (p.joy || 0) / 500);
+    return { hp: Math.round(b.hp * (.8 + .25 * (p.lv - 1)) * mul), atk: Math.max(1, Math.round(b.atk * (.9 + .18 * (p.lv - 1)) * mul * joy)), joyBonus: Math.round((joy - 1) * 100) };
+}
+function petAddXp(p, n) {
+    const s0 = petStage(p), l0 = p.lv; p.xp += n;
+    while (p.lv < PET_LV_MAX && p.xp >= petXpNeed(p)) { p.xp -= petXpNeed(p); p.lv++; }
+    if (p.lv >= PET_LV_MAX) p.xp = 0;
+    return { ups: p.lv - l0, evo: petStage(p) > s0 };
+}
+
+/* ---------- save / load ---------- */
+function petPack() { return { t: Date.now(), o: ME.olives, p: ME.pets, d: ME.dex, c: ME.deco, f: ME.fav }; }
+function petUnpack(raw) {
+    const cands = [];
+    const add = x => { try { const o = typeof x === 'string' ? JSON.parse(x) : x; if (o && typeof o === 'object') cands.push(o); } catch (e) { /* ignore */ } };
+    add(raw); try { if (ME.uid) add(localStorage.getItem('olivetv_pets_' + ME.uid)); } catch (e) { /* ignore */ }
+    cands.sort((a, b) => (b.t || 0) - (a.t || 0));
+    const d = cands[0] || {};
+    ME.olives = (d.o === undefined || isNaN(d.o)) ? 5 : Math.max(0, d.o | 0);
+    ME.pets = (Array.isArray(d.p) ? d.p : []).filter(p => p && MON[p.type]).slice(0, PET_MAX).map(p => ({
+        id: String(p.id || petId()), type: p.type, nick: cleanNick(p.nick) || MON[p.type].name, lv: clamp(p.lv | 0 || 1, 1, PET_LV_MAX), xp: Math.max(0, p.xp | 0),
+        joy: clamp(p.joy | 0, 0, 100), hat: PET_HAT_BY[p.hat] ? p.hat : 'none', hue: clamp(p.hue | 0, 0, 359), spark: !!p.spark
+    }));
+    ME.dex = {}; if (d.d && typeof d.d === 'object') for (const k in MON) if (d.d[k]) ME.dex[k] = d.d[k] | 0;
+    ME.deco = (Array.isArray(d.c) ? d.c : []).filter(x => typeof x === 'string');
+    ME.fav = ME.pets.some(p => p.id === d.f) ? d.f : null;
+}
+
+/* ---------- pet sprites (monster + hat + sparkle, recolored by hue) ---------- */
+function hueShift(c, deg) {
+    if (!deg) return c;
+    const o = document.createElement('canvas'); o.width = c.width; o.height = c.height;
+    const id = c.getContext('2d').getImageData(0, 0, c.width, c.height), d = id.data;
+    const f = (p, q, t) => { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < .5) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; };
+    for (let i = 0; i < d.length; i += 4) {
+        if (!d[i + 3]) continue;
+        const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dl = mx - mn;
+        let h = 0, sat = 0;
+        if (dl) { sat = l > .5 ? dl / (2 - mx - mn) : dl / (mx + mn); h = mx === r ? (g - b) / dl + (g < b ? 6 : 0) : mx === g ? (b - r) / dl + 2 : (r - g) / dl + 4; h *= 60; }
+        h = ((h + deg) % 360) / 360;
+        if (sat) { const q = l < .5 ? l * (1 + sat) : l + sat - l * sat, p = 2 * l - q; d[i] = f(p, q, h + 1 / 3) * 255; d[i + 1] = f(p, q, h) * 255; d[i + 2] = f(p, q, h - 1 / 3) * 255; }
+    }
+    o.getContext('2d').putImageData(id, 0, 0); return o;
+}
+const _petC = {};
+function petSprite(type, hat, spark, hue) {
+    const key = type + '|' + hat + '|' + (spark ? 1 : 0) + '|' + (hue | 0);
+    if (_petC[key]) return _petC[key];
+    const base = monCanvas(type), W = 16, c = document.createElement('canvas'); c.width = W; c.height = W + PET_PAD;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.drawImage(hueShift(base, hue | 0), 0, PET_PAD);
+    const px = base.getContext('2d').getImageData(0, 0, W, W).data; let top = 0, found = false;
+    for (let y = 0; y < W && !found; y++) for (let x = 5; x <= 10; x++) if (px[(y * W + x) * 4 + 3] > 0) { top = y; found = true; break; }
+    const y0 = top + PET_PAD, R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+    if (hat === 'bow') { R(8, y0 - 3, 2, 3, '#ff5c93'); R(11, y0 - 3, 2, 3, '#ff5c93'); R(8, y0 - 3, 2, 1, '#ff8fb4'); R(11, y0 - 3, 2, 1, '#ff8fb4'); R(10, y0 - 2, 1, 1, '#c2185b'); }
+    else if (hat === 'sprout') { R(7, y0 - 3, 2, 3, '#2e7d32'); R(9, y0 - 5, 3, 2, '#66bb6a'); R(4, y0 - 4, 3, 2, '#66bb6a'); R(10, y0 - 5, 1, 1, '#a5d6a7'); }
+    else if (hat === 'party') { R(7, y0 - 6, 2, 1, '#ffeb3b'); R(7, y0 - 5, 2, 1, '#e91e63'); R(6, y0 - 4, 4, 1, '#2196f3'); R(6, y0 - 3, 4, 1, '#e91e63'); R(5, y0 - 2, 6, 1, '#2196f3'); R(5, y0 - 1, 6, 1, '#e91e63'); }
+    else if (hat === 'flower') { R(10, y0 - 3, 1, 1, '#ff80ab'); R(9, y0 - 2, 1, 1, '#ff80ab'); R(11, y0 - 2, 1, 1, '#ff80ab'); R(10, y0 - 1, 1, 1, '#ff80ab'); R(10, y0 - 2, 1, 1, '#ffeb3b'); }
+    else if (hat === 'halo') { R(5, y0 - 6, 6, 1, '#ffe066'); R(4, y0 - 5, 1, 1, '#ffe066'); R(11, y0 - 5, 1, 1, '#ffe066'); R(5, y0 - 4, 6, 1, '#c9a227'); }
+    else if (hat === 'crown') { R(5, y0 - 2, 6, 2, '#f1c40f'); R(5, y0 - 4, 1, 2, '#f1c40f'); R(7, y0 - 5, 2, 3, '#f1c40f'); R(10, y0 - 4, 1, 2, '#f1c40f'); R(5, y0 - 1, 6, 1, '#c9a227'); R(7, y0 - 2, 2, 1, '#e53935'); }
+    if (spark) [[2, PET_PAD + 3], [13, PET_PAD + 7], [3, PET_PAD + 13], [12, PET_PAD + 1]].forEach(([x, y]) => { R(x, y - 1, 1, 3, '#fff3a0'); R(x - 1, y, 3, 1, '#fff3a0'); R(x, y, 1, 1, '#ffffff'); });
+    return _petC[key] = c;
+}
+function petDraw(cv, pet, w) {
+    const sp = petSprite(pet.type, pet.hat || 'none', pet.spark, pet.hue || 0), h = Math.round(w * sp.height / sp.width);
+    cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, w, h); g.drawImage(sp, 0, 0, w, h);
+}
+
+/* ---------- battle: pet state + UI ---------- */
+function petReset() {
+    $('bPetC').classList.add('hidden'); $('bPetBox').classList.add('hidden'); $('bCatch').textContent = '';
+    const f = $('bFoeC'); f.style.opacity = ''; f.style.transform = ''; f.style.transition = '';
+}
+function petStart() {
+    petReset(); pve.mem = {}; pve.used = new Set(); pve.stun = 0; pve.weak = 0; pve.pet = null;
+    const fp = petById(ME.fav); if (fp) { petSummon(fp, false); bLog(`Go, ${fp.nick}! 🐾`); }
+}
+function catchChance() {
+    const m = pve.m, ratio = pve.hp / pve.max;
+    return clamp(PET_INFO[m.id].rate * (.4 + .6 * (1 - ratio)) * (1 - (m.lv - 1) * .02), .03, .95);
+}
+function petUI() {
+    if (!pve) return;
+    $('bCatch').textContent = `🫒 Catch rate: ${Math.round(catchChance() * 100)}%`;
+    const P = pve.pet; if (P) { $('bPetName').textContent = `Lv${P.d.lv} ${P.d.nick}`; bBar('bPetHp', 'bPetHpT', P.hp, P.max, 'HP'); }
+}
+function bLunge(id) { const el = $(id); el.classList.remove('lunge'); void el.offsetWidth; el.classList.add('lunge'); setTimeout(() => el.classList.remove('lunge'), 450); }
+function petSummon(d, fresh) {
+    if (pve.pet) pve.mem[pve.pet.d.id] = pve.pet.hp;
+    const max = petStats(d).hp, hp = pve.mem[d.id] === undefined ? max : pve.mem[d.id];
+    pve.pet = { d, hp, max, cd: 0, guard: false, fresh: !!fresh }; pve.used.add(d.id);
+    const c = $('bPetC'); petDraw(c, d, 96); c.style.width = `calc(min(100px,19vw) * ${STAGE_SIZE[petStage(d)]})`;
+    c.classList.remove('hidden', 'pop'); void c.offsetWidth; c.classList.add('pop'); setTimeout(() => c.classList.remove('pop'), 500);
+    $('bPetBox').classList.remove('hidden'); sfx('good'); petUI();
+}
+function petPicker() {
+    if (!ME.pets.length) { bLog('You have no monsters yet. Throw an Olive 🫒 to catch one!'); return; }
+    const list = ME.pets.map(p => ({
+        label: `${p.id === ME.fav ? '⭐ ' : ''}Lv${p.lv} ${p.nick}${pve.mem[p.id] === 0 ? ' 💤' : ''}`,
+        disabled: pve.mem[p.id] === 0 || !!(pve.pet && pve.pet.d.id === p.id), fn: () => pveAct('summon:' + p.id)
+    }));
+    list.push({ label: '◀ Back', fn: () => pveActions(false) }); bActions(list);
+    bLog('Choose a monster to summon (3 MP).');
+}
+async function petTurn() {
+    const P = pve.pet; if (!P) return;
+    if (P.fresh) { P.fresh = false; return; }
+    const st = petStats(P.d), name = P.d.nick, t = P.d.type, info = PET_INFO[t];
+    P.cd++; const useSkill = P.cd >= 3; if (useSkill) P.cd = 0;
+    let d = Math.max(1, Math.round(st.atk * (.85 + Math.random() * .3)));
+    bLunge('bPetC');
+    if (useSkill) {
+        bLog(`${name} uses ${info.skill}!`);
+        if (t === 'slime') { d = Math.max(1, Math.round(d * .8)); const h = Math.min(8 + P.d.lv * 2, maxHp() - ME.hp); ME.hp += h; bLog(`You recover ${h} HP from the hug.`); }
+        else if (t === 'bat') { d = Math.round(d * 1.3); const h = Math.round(d / 2); P.hp = Math.min(P.max, P.hp + h); bLog(`${name} drains some energy (+${h} HP).`); }
+        else if (t === 'mushroom') { d = Math.max(1, Math.round(d * .9)); pve.weak = 2; bLog(`${MON[pve.m.id].name} feels weak...`); }
+        else if (t === 'ghost') { pve.stun = 1; bLog(`${MON[pve.m.id].name} is terrified!`); }
+        else if (t === 'golem') { d = Math.max(1, Math.round(d * .6)); P.guard = true; bLog(`${name} will guard you!`); }
+        else if (t === 'dragon') { d = Math.round(d * 2.2); }
+    }
+    pve.hp = Math.max(0, pve.hp - d); sfx('hit'); await sleep(250); bShake('bFoeC'); bFloat('bFoeC', d);
+    bLog(`${name} hits for ${d}!`); pveRender(); await sleep(650);
+}
+async function foeStrike(base) {
+    if (pve.stun > 0) { pve.stun--; bLog(`${base.name} is too scared to move!`); await sleep(600); }
+    else {
+        let md = Math.max(1, Math.round(pve.atk * (.8 + Math.random() * .4)));
+        if (pve.weak > 0) { pve.weak--; md = Math.max(1, Math.round(md * .6)); }
+        const P = pve.pet;
+        if (P && (P.guard || Math.random() < .35)) {
+            if (P.guard) { P.guard = false; md = Math.max(1, Math.round(md * .5)); bLog(`${P.d.nick} stands in front of you!`); }
+            P.hp = Math.max(0, P.hp - md); sfx('bad'); bShake('bPetC'); bFloat('bPetC', md); bLog(`${base.name} hits ${P.d.nick} for ${md}!`);
+            if (P.hp <= 0) { bLog(`${P.d.nick} fainted... 💤`); pve.mem[P.d.id] = 0; pve.pet = null; pveRender(); await sleep(500); $('bPetC').classList.add('hidden'); $('bPetBox').classList.add('hidden'); }
+        } else { ME.hp = Math.max(0, ME.hp - md); sfx('bad'); bShake('bMeC'); bFloat('bMeC', md); bLog(`${base.name} hits you for ${md}!`); }
+        pveRender(); await sleep(600);
+    }
+}
+function petWinHook(xp, drop) {
+    if (drop && Math.random() < .35) { ME.olives++; bLog('The monster dropped an Olive! 🫒'); }
+    if (!pve.used) return;
+    pve.used.forEach(id => {
+        const p = petById(id); if (!p) return;
+        const gain = Math.max(1, Math.round(xp * (pve.mem[id] === 0 ? .5 : 1)));
+        p.joy = Math.min(100, p.joy + 2); const r = petAddXp(p, gain);
+        bLog(`${p.nick} gained ${gain} XP${r.ups ? ` and grew to Lv${p.lv}!` : '.'}`); if (r.evo) bLog(`✨ ${p.nick} evolved into a ${STAGE_NAME[petStage(p)]} form! ✨`);
+    });
+}
+
+/* ---------- throwing the olive ---------- */
+const anim = (el, frames, o) => { try { return el.animate(frames, o).finished.catch(() => { }); } catch (e) { return sleep(o.duration || 300); } };
+async function oliveThrow() {
+    const chance = catchChance(), foe = $('bFoeC'), me = $('bMeC'), bt = $('battle');
+    const fr = foe.getBoundingClientRect(), mr = me.getBoundingClientRect();
+    const sx = mr.left + mr.width * .85, sy = mr.top + mr.height * .25, ex = fr.left + fr.width / 2, ey = fr.top + fr.height / 2;
+    const fly = document.createElement('div'); fly.className = 'olive-fly'; fly.textContent = '🫒'; fly.style.left = sx + 'px'; fly.style.top = sy + 'px'; bt.appendChild(fly); sfx('tick');
+    await anim(fly, [{ transform: 'translate(0,0) rotate(0deg)' }, { transform: `translate(${(ex - sx) / 2}px,${(ey - sy) / 2 - 80}px) rotate(360deg)` }, { transform: `translate(${ex - sx}px,${ey - sy}px) rotate(720deg) scale(.8)` }], { duration: 650, easing: 'ease-in', fill: 'forwards' });
+    fly.remove();
+    foe.style.transition = 'transform .3s, opacity .3s'; foe.style.transform = 'scale(.1)'; foe.style.opacity = '0';
+    const ball = document.createElement('div'); ball.className = 'olive-ball'; ball.textContent = '🫒'; ball.style.left = (ex - 18) + 'px'; ball.style.top = (ey - 18) + 'px'; bt.appendChild(ball);
+    await sleep(350);
+    const p3 = Math.pow(chance, 1 / 3); let shakes = 0;
+    for (let i = 0; i < 3; i++) {
+        await anim(ball, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-28deg)' }, { transform: 'rotate(28deg)' }, { transform: 'rotate(0deg)' }], { duration: 520 }); sfx('tick');
+        if (Math.random() > p3) break; shakes++; await sleep(200);
+    }
+    if (shakes === 3) { ball.style.filter = 'drop-shadow(0 0 10px #ffe066)'; ball.textContent = '🫒'; sfx('good'); await sleep(800); ball.remove(); return true; }
+    ball.remove(); foe.style.opacity = ''; foe.style.transform = ''; sfx('bad');
+    bLog(['Oh no! It broke free right away!', 'It popped out! Almost had it...', 'So close!! It escaped at the last moment!'][shakes]);
+    await sleep(450); return false;
+}
+async function petCaught() {
+    const m = pve.m, base = MON[m.id];
+    const pet = { id: petId(), type: m.id, nick: base.name, lv: Math.max(1, Math.ceil(m.lv / 2)), xp: 0, joy: 20, hat: 'none', hue: 0, spark: false };
+    ME.pets.push(pet); ME.dex[m.id] = (ME.dex[m.id] | 0) + 1; if (!ME.fav) ME.fav = pet.id;
+    sfx('good'); bLog(`Gotcha! ${base.name} is now your friend! 🎉`); bLog(`Lv${pet.lv} ${base.name} joined your Monster Den. Open 🐾 to raise & decorate it!`);
+    const xp = Math.round(base.xp * m.lv / 2); ME.xp += xp; bLog(`+${xp} XP`);
+    let up = false; while (ME.xp >= xpNeed(ME.lv)) { ME.xp -= xpNeed(ME.lv); ME.lv++; up = true; }
+    if (up) { ME.hp = maxHp(); ME.mp = maxMp(); bLog(`LEVEL UP! You are now level ${ME.lv}!`); }
+    petWinHook(xp, false);
+    m.alive = false; m.respawnAt = Date.now() + (m.id === 'dragon' ? 240000 : 25000);
+    saveProfile(); pveRender(); await sleep(2100); endPvE('win');
+}
+
+/* ---------- Monster Den panel (raise & decorate) ---------- */
+let petSel = null;
+function buildPets() {
+    const b = $('petBody'); if (!b) return;
+    if (!petById(petSel)) petSel = petById(ME.fav) ? ME.fav : (ME.pets[0] ? ME.pets[0].id : null);
+    const p = petById(petSel);
+    let html = `<div class="pt-top"><span>🫒 Olives: <b>${ME.olives}</b></span><span>🪙 ${ME.coins}</span><span>🐾 ${ME.pets.length}/${PET_MAX}</span></div>`;
+    if (!ME.pets.length) html += `<div class="pt-empty">You have no monsters yet!<br>In the Wild Forest, hit a monster in battle and throw an <b>Olive 🫒</b> to catch it.<br>The weaker it is, the better your chance. Olives are sold at the Village Shop.</div>`;
+    if (p) {
+        const st = petStats(p), stage = petStage(p), info = PET_INFO[p.type], need = petXpNeed(p), maxed = p.lv >= PET_LV_MAX;
+        html += `<div class="pt-det"><div class="pt-prev"><canvas id="ptPrev"></canvas></div><div class="pt-info">
+          <label>Name</label><input type="text" id="ptNick" maxlength="12" value="${escapeHtml(p.nick)}">
+          <small>${escapeHtml(MON[p.type].name)} · Lv${p.lv} · ${STAGE_NAME[stage]}${stage < 3 ? ` (evolves at Lv${stage === 1 ? 10 : 20})` : ''}</small>
+          <div class="pt-bar xp"><i style="width:${maxed ? 100 : Math.round(p.xp / need * 100)}%"></i><span>${maxed ? 'MAX' : `XP ${p.xp}/${need}`}</span></div>
+          <div class="pt-bar joy"><i style="width:${p.joy}%"></i><span>♥ ${p.joy}/100</span></div>
+          <small>❤ HP ${st.hp} &nbsp; ⚔ ATK ${st.atk}${st.joyBonus ? ` (+${st.joyBonus}% from ♥)` : ''}</small>
+          <small>✨ <b>${info.skill}</b> — ${info.sd}</small>
+          <div class="pt-act"><button class="btn" id="ptFeed">🫒 Feed Olive (${ME.olives})</button><button class="btn btn-alt" id="ptFav">${ME.fav === p.id ? '⭐ Partner' : '☆ Make Partner'}</button><button class="btn btn-gray" id="ptRel">Release</button></div>
+        </div>
+        <div class="pt-deco">
+          <div class="row"><b>Hat</b><span id="ptHats">${PET_HATS.map(h => `<button class="pt-opt${p.hat === h.k ? ' sel' : ''}" data-k="${h.k}">${h.n}${h.p && ME.deco.indexOf(h.k) < 0 ? ' 🪙' + h.p : ''}</button>`).join(' ')}</span></div>
+          <div class="row"><b>Color</b><input type="range" id="ptHue" min="0" max="345" step="15" value="${p.hue}" style="width:170px"><button class="pt-opt" id="ptHueReset">Reset</button></div>
+          <div class="row"><b>Sparkle</b><button class="pt-opt${p.spark ? ' sel' : ''}" id="ptSpark">${p.spark ? 'On' : 'Off'}${ME.deco.indexOf('spark') < 0 ? ' 🪙' + PET_SPARK_PRICE : ''}</button></div>
+        </div></div>`;
+    }
+    if (ME.pets.length) html += `<h4 class="pt-h">Your monsters (tap to select)</h4><div class="pt-grid" id="ptGrid"></div>`;
+    html += `<h4 class="pt-h">Monster Book</h4><div class="pt-dex" id="ptDex"></div>`;
+    b.innerHTML = html;
+    if (p) petDraw($('ptPrev'), p, 128);
+    const grid = $('ptGrid');
+    if (grid) ME.pets.forEach(q => {
+        const c = document.createElement('div'); c.className = 'pt-card' + (q.id === petSel ? ' sel' : '');
+        c.innerHTML = `${q.id === ME.fav ? '<span class="fav">⭐</span>' : ''}<canvas></canvas><div class="pn">${escapeHtml(q.nick)}</div><div class="pl">Lv${q.lv}${petStage(q) > 1 ? ' ' + '★'.repeat(petStage(q) - 1) : ''}</div>`;
+        petDraw(c.querySelector('canvas'), q, 48); c.onclick = () => { petSel = q.id; buildPets(); }; grid.appendChild(c);
+    });
+    const dex = $('ptDex');
+    for (const k in MON) {
+        const n = ME.dex[k] | 0, c = document.createElement('div'); c.innerHTML = `<canvas></canvas><div>${n ? escapeHtml(MON[k].name) + ' ×' + n : '???'}</div>`;
+        const cv = c.querySelector('canvas'); petDraw(cv, { type: k, hat: 'none', spark: false, hue: 0 }, 48); if (!n) cv.style.filter = 'brightness(0) opacity(.3)'; dex.appendChild(c);
+    }
+    if (!p) return;
+    const done = msg => { saveProfile(); if (msg) toast(msg, 'good'); buildPets(); };
+    $('ptNick').onchange = e => { p.nick = cleanNick(e.target.value) || MON[p.type].name; done(); };
+    $('ptFeed').onclick = () => {
+        if (ME.olives <= 0) { toast('No olives! Buy some at the Village Shop.', 'bad'); sfx('bad'); return; }
+        if (p.lv >= PET_LV_MAX && p.joy >= 100) { toast(`${p.nick} is full and happy!`); return; }
+        ME.olives--; p.joy = Math.min(100, p.joy + 8); const r = petAddXp(p, 12); sfx('good');
+        done(r.evo ? `✨ ${p.nick} evolved! ✨` : r.ups ? `${p.nick} grew to Lv${p.lv}! 🎉` : `${p.nick} enjoyed the olive! ♥`);
+    };
+    $('ptFav').onclick = () => { ME.fav = ME.fav === p.id ? null : p.id; done(ME.fav ? `${p.nick} will join you in battle!` : ''); };
+    $('ptRel').onclick = () => {
+        if (!confirm(`Release ${p.nick}? You will get 1 olive back.`)) return;
+        ME.pets = ME.pets.filter(q => q.id !== p.id); if (ME.fav === p.id) ME.fav = null; ME.olives++; petSel = null; done(`${p.nick} went back to the forest.`);
+    };
+    document.querySelectorAll('#ptHats .pt-opt').forEach(btn => btn.onclick = () => {
+        const h = PET_HAT_BY[btn.dataset.k];
+        if (h.p && ME.deco.indexOf(h.k) < 0) { if (ME.coins < h.p) { toast('Not enough coins!', 'bad'); sfx('bad'); return; } ME.coins -= h.p; ME.deco.push(h.k); sfx('coin'); }
+        p.hat = h.k; done();
+    });
+    $('ptHue').oninput = e => { p.hue = e.target.value | 0; petDraw($('ptPrev'), p, 128); };
+    $('ptHue').onchange = () => done();
+    $('ptHueReset').onclick = () => { p.hue = 0; done(); };
+    $('ptSpark').onclick = () => {
+        if (ME.deco.indexOf('spark') < 0) { if (ME.coins < PET_SPARK_PRICE) { toast('Not enough coins!', 'bad'); sfx('bad'); return; } ME.coins -= PET_SPARK_PRICE; ME.deco.push('spark'); sfx('coin'); }
+        p.spark = !p.spark; done();
+    };
 }
 
 /* ---------- PvP ---------- */
@@ -2593,7 +2917,7 @@ function initTitle() {
 
 /* ---------- wire up ---------- */
 function wire() {
-    $('btnToday').onclick = () => openPanel('today'); $('btnWardrobe').onclick = () => openPanel('wardrobe');
+    $('btnToday').onclick = () => openPanel('today'); $('btnWardrobe').onclick = () => openPanel('wardrobe'); $('btnPets').onclick = () => openPanel('pets');
     $('btnGuide').onclick = () => openPanel('guide'); $('btnClassic').onclick = () => toggleClassic(true);
     $('btnNight').onclick = () => toggleDarkMode(); $('btnPrint').onclick = () => printPage(); $('btnLog').onclick = () => openPanel('log');
     $('btnLogout').onclick = () => handleGoogleLogin();
@@ -2614,7 +2938,7 @@ function wire() {
     initTitle();
 }
 window.VG = {
-    renderToday, refreshToday, openGuestbook, postGuest, buildShop, buildLeader, buildHouseMenu, buildProfile, buildWardrobe, startTutorial,
+    renderToday, refreshToday, openGuestbook, postGuest, buildShop, buildLeader, buildHouseMenu, buildProfile, buildWardrobe, buildPets, startTutorial,
     openAdmin, setAnnouncement, clearAnnouncement, showAnnouncement, myGrade, beforeLogout, onPanelClose, refreshGround,
     onRoomChange: () => { updateHud(); }
 };
