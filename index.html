@@ -10,6 +10,10 @@
 <meta property="og:title" content="Prayer Department · Olivet Teen Mission International">
 <meta property="og:description" content="Write down what is on your heart. Our team will read your request and pray for you.">
 <meta name="robots" content="index,follow">
+<meta name="application-name" content="Prayer Department">
+<meta property="og:site_name" content="Olivet Teen Mission International">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Olivet Teen Mission International","department":{"@type":"Organization","name":"Prayer Department","description":"Receives prayer requests from teens and prays for each one."}}</script>
 <link rel="icon" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -219,6 +223,28 @@ footer .lnk{background:0;border:0;color:#9fc3ff;cursor:pointer;padding:0;font-si
 .priv-box p,.priv-box li{font-size:.85rem;line-height:1.65;color:#cdd9f3}
 .priv-box ul{padding-left:18px}
 noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff}
+/* ---- added: folders, bulk actions, toast, info sections ---- */
+a.btn-g{text-decoration:none;display:inline-block}
+.views{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.vc{font-family:'Geist Mono',monospace;font-size:.72rem;opacity:.7;margin-left:6px}
+.tnote{font-size:.8rem;color:var(--muted);margin:-4px 0 14px;line-height:1.5}
+.bulk{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);margin-bottom:14px;font-size:.85rem}
+.bulk .acts{flex-wrap:wrap}
+.sel{width:17px;height:17px;accent-color:#4a6dbc;margin-right:10px;vertical-align:-3px;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:150;background:#13244a;border:1px solid var(--line);color:#fff;border-radius:999px;padding:10px 12px 10px 18px;display:flex;gap:12px;align-items:center;font-size:.875rem;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100vw - 32px)}
+.toast .btn-g{padding:5px 14px;font-size:.8125rem}
+.info{padding:0 0 56px;scroll-margin-top:24px}
+.info h2{font-size:1.6rem;letter-spacing:-.03em;font-weight:600;color:#fff;margin-bottom:16px}
+.bcard h3{font-size:1rem;color:#fff;letter-spacing:-.01em}
+.bcard .sn{font-family:'Geist Mono',monospace;font-size:.72rem;color:#8fb0ea}
+.faq{display:grid;gap:10px}
+.faq details{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:0 20px}
+.faq summary{cursor:pointer;padding:16px 0;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:'Geist Mono',monospace;color:#8fb0ea;font-size:1.1rem}
+.faq details[open] summary::after{content:"\2013"}
+.faq details p{padding:0 0 16px;line-height:1.65;color:#cdd9f3;font-size:.9rem}
+@media(max-width:700px){.navl{display:none!important}}
 </style>
 </head>
 <body>
@@ -228,6 +254,8 @@ noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff
 <header>
   <div class="brand"><img data-logo="round" alt="Olivet Teen Mission logo"><span>Prayer Department</span></div>
   <nav aria-label="Main">
+    <a class="btn-g navl" href="#how">How it works</a>
+    <a class="btn-g navl" href="#faq">FAQ</a>
     <span class="who hide" id="who"></span>
     <button class="btn-g hide" id="tabSubmit">Submit</button>
     <button class="btn-g hide" id="tabInbox">Requests</button>
@@ -287,6 +315,27 @@ noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff
     <p class="bsub">Shared anonymously with permission. Take a moment to pray for each request.</p>
     <div class="bgrid" id="boardList"></div>
   </section>
+
+  <section class="info" id="how" aria-labelledby="howH">
+    <h2 id="howH">How it works</h2>
+    <div class="bgrid">
+      <article class="bcard"><small class="sn">STEP 1</small><h3>Write your request</h3><p>Tell us your name and grade, pick a topic, and write what is on your heart. You can send it anonymously.</p></article>
+      <article class="bcard"><small class="sn">STEP 2</small><h3>Our team prays</h3><p>The Prayer Department reads every request. Requests marked urgent are looked at first.</p></article>
+      <article class="bcard"><small class="sn">STEP 3</small><h3>Follow along</h3><p>Sign in to see when your request has been prayed for, and mark it as answered whenever God answers.</p></article>
+    </div>
+  </section>
+
+  <section class="info" id="faq" aria-labelledby="faqH">
+    <h2 id="faqH">Frequently asked questions</h2>
+    <div class="faq">
+      <details><summary>Who can see my request?</summary><p>Only the Prayer Department. A request is never shown publicly unless you agree to the Prayer Board, and then only without your name and after it has been reviewed.</p></details>
+      <details><summary>Can I send a request anonymously?</summary><p>Yes. Your name is hidden from the team's list. For safety, the email of the Google account you signed in with is still visible to the Prayer Department.</p></details>
+      <details><summary>Why do I need to sign in with Google?</summary><p>It keeps the form safe from spam and lets you see the status of your own requests later.</p></details>
+      <details><summary>Can I delete or change my request?</summary><p>You can delete a request, withdraw it from the Prayer Board, or mark it as answered anytime from "My requests" after signing in.</p></details>
+      <details><summary>What does "urgent" mean?</summary><p>Use it when you would like the team to pray as soon as possible. It is not for emergencies. If someone is in danger, call 911, or call or text 988 in the US.</p></details>
+      <details><summary>What is the Prayer Board?</summary><p>A public page where reviewed requests are shown without names, so others can pray along. Joining is always optional.</p></details>
+    </div>
+  </section>
 </main>
 
 <main id="mine" class="mine hide">
@@ -306,13 +355,21 @@ noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff
       <button class="btn-g" data-f="board">Board consent</button>
     </div>
   </div>
+  <div class="views" id="views" aria-label="Request folders">
+    <button class="btn-g on" data-v="active">Inbox<span class="vc">0</span></button>
+    <button class="btn-g" data-v="hidden">Hidden<span class="vc">0</span></button>
+    <button class="btn-g" data-v="archive">Archive<span class="vc">0</span></button>
+    <button class="btn-g" data-v="trash">Trash<span class="vc">0</span></button>
+  </div>
+  <p class="tnote hide" id="trashNote">Items in the trash are permanently deleted after 30 days. You can restore them until then.</p>
   <div class="toolbar">
     <input type="text" id="q" placeholder="Search name, email, note or request" autocomplete="off">
     <select id="gsel" aria-label="Filter by grade"><option value="">All grades</option></select>
     <select id="csel" aria-label="Filter by topic"><option value="">All topics</option></select>
     <select id="ssel" aria-label="Sort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="urgent">Urgent first</option></select>
   </div>
-  <div class="tools"><button class="btn-g" id="drawBtn">Draw a request</button><button class="btn-g" id="csvBtn">Export CSV</button></div>
+  <div class="tools"><button class="btn-g" id="selBtn">Select all</button><button class="btn-g" id="drawBtn">Draw a request</button><button class="btn-g" id="csvBtn">Export CSV</button><button class="btn-g hide" id="emptyBtn">Empty trash</button></div>
+  <div class="bulk hide" id="bulk"><span id="bcount"></span><div class="acts" id="bacts"></div></div>
   <div class="fbox">
     <label for="ftxt">Featured prayer focus (shown to everyone on the main page)</label>
     <textarea id="ftxt" maxlength="500"></textarea>
@@ -324,7 +381,7 @@ noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff
 <footer>
   <div class="fin">
     <span>© <span id="yr"></span> Olivet Teen Mission International · Prayer Department</span>
-    <div class="flinks"><button class="lnk" id="privBtn">Privacy &amp; data</button></div>
+    <div class="flinks"><button class="lnk" id="privBtn">Privacy &amp; data</button><button class="lnk" id="guideBtn">Community guidelines</button><button class="lnk" id="shareBtn">Share this site</button><button class="lnk" id="topBtn">Back to top</button></div>
   </div>
 </footer>
 
@@ -356,6 +413,22 @@ noscript p{position:relative;z-index:5;padding:20px;text-align:center;color:#fff
     <div class="acts"><button class="btn-g" id="privClose">Close</button></div>
   </div>
 </div>
+
+<div class="modal hide" id="guideM" role="dialog" aria-label="Community guidelines">
+  <div class="box priv-box">
+    <h3>Community guidelines</h3>
+    <ul>
+      <li>Write with kindness. Requests are prayed for, not judged.</li>
+      <li>Do not include private details about other people (full names, phone numbers, addresses) unless they have agreed.</li>
+      <li>Keep requests free of insults, bullying or inappropriate content. The Prayer Department may hide or remove them.</li>
+      <li>Requests shown on the Prayer Board are reviewed first and never show your name.</li>
+      <li>This form is not for emergencies. Call 911, or call or text 988 in the US.</li>
+    </ul>
+    <div class="acts"><button class="btn-g" id="guideClose">Close</button></div>
+  </div>
+</div>
+
+<div class="toast hide" id="toast" role="status" aria-live="polite"></div>
 
 <div id="fx" aria-hidden="true">
   <canvas id="sc"></canvas>
@@ -477,7 +550,22 @@ $("req").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Ente
 $("privBtn").onclick=()=>$("privM").classList.remove("hide");
 $("privClose").onclick=()=>$("privM").classList.add("hide");
 $("privM").onclick=e=>{if(e.target===$("privM"))$("privM").classList.add("hide")};
-addEventListener("keydown",e=>{if(e.key==="Escape")$("privM").classList.add("hide")});
+$("guideBtn").onclick=()=>$("guideM").classList.remove("hide");
+$("guideClose").onclick=()=>$("guideM").classList.add("hide");
+$("guideM").onclick=e=>{if(e.target===$("guideM"))$("guideM").classList.add("hide")};
+addEventListener("keydown",e=>{if(e.key==="Escape"){$("privM").classList.add("hide");$("guideM").classList.add("hide")}});
+$("topBtn").onclick=()=>scrollTo({top:0,behavior:"smooth"});
+$("shareBtn").onclick=async()=>{
+  const d={title:document.title,text:"Send a prayer request to the Prayer Department.",url:location.href.split("#")[0]};
+  try{if(navigator.share){await navigator.share(d);return}}catch(e){if(e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(d.url);toast("Link copied")}catch(e){toast(d.url)}
+};
+function toast(text,undo){
+  const t=$("toast");t.textContent="";
+  const sp=document.createElement("span");sp.textContent=text;t.append(sp);
+  if(undo){const b=document.createElement("button");b.className="btn-g";b.type="button";b.textContent="Undo";b.onclick=()=>{t.classList.add("hide");undo()};t.append(b)}
+  t.classList.remove("hide");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.add("hide"),8000);
+}
 
 /* ---------- paper plane: fold, then fly over sea and sky ---------- */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -860,11 +948,15 @@ function hoursSel(val,cb){
   i.onchange=()=>{let v=parseFloat(i.value);if(!(v>=0))v=0;v=Math.min(v,HRS_MAX);i.value=v||"";cb(v)};
   return i;
 }
+const FOLDERS={active:"Inbox",hidden:"Hidden",archive:"Archive",trash:"Trash"},TRASH_DAYS=30;
+let view="active";const sel=new Set(),purged=new Set();
+const folderOf=i=>i.folder||"active";
 const who=i=>i.anonymous?"Anonymous":`${i.firstName} ${i.lastName}`;
 const created=i=>i.createdAt?.toDate?i.createdAt.toDate().getTime():0;
 const waitDays=i=>Math.floor((Date.now()-created(i))/864e5);
 const isLate=i=>!i.prayed&&created(i)>0&&waitDays(i)>=LATE_DAYS;
 function match(i){
+  if(folderOf(i)!==view)return false;
   if(filter==="new"&&i.prayed)return false;
   if(filter==="urgent"&&!(i.urgent&&!i.prayed))return false;
   if(filter==="late"&&!isLate(i))return false;
@@ -893,54 +985,110 @@ const unpublish=async i=>{
     await updateDoc(doc(db,COL,i.id),{onBoard:false});
   }catch(err){console.error(err);alert("Could not remove from the board ("+(err.code||err.message)+").")}
 };
+const mvBtn=(label,fn)=>{const b=document.createElement("button");b.className="btn-g";b.type="button";b.textContent=label;b.onclick=fn;return b};
+const plural=n=>n+" request"+(n===1?"":"s");
+async function moveTo(list,folder){
+  const prev=list.map(i=>({id:i.id,folder:folderOf(i)}));
+  try{
+    await Promise.all(list.map(async i=>{
+      if(folder!=="active"&&i.onBoard)await deleteDoc(doc(db,BOARD,i.id)).catch(()=>{});
+      const u={folder,trashedAt:folder==="trash"?serverTimestamp():null};
+      if(folder!=="active")u.onBoard=false;
+      await updateDoc(doc(db,COL,i.id),u);
+    }));
+  }catch(err){console.error(err);alert("Could not move. Please try again.");return}
+  sel.clear();
+  const msg=folder==="trash"?`${plural(list.length)} moved to trash`:folder==="active"?`${plural(list.length)} restored to inbox`:`${plural(list.length)} moved to ${FOLDERS[folder].toLowerCase()}`;
+  toast(msg,()=>Promise.all(prev.map(p=>updateDoc(doc(db,COL,p.id),{folder:p.folder,trashedAt:null}))).catch(e=>{console.error(e);alert("Could not undo.")}));
+}
+async function deleteForever(list){
+  if(!list.length||!confirm(`Permanently delete ${plural(list.length)}? This cannot be undone.`))return;
+  try{
+    await Promise.all(list.map(async i=>{if(i.onBoard)await deleteDoc(doc(db,BOARD,i.id)).catch(()=>{});await deleteDoc(doc(db,COL,i.id))}));
+    sel.clear();toast(`${plural(list.length)} deleted permanently`);
+  }catch(err){console.error(err);alert("Could not delete. Please try again.")}
+}
+function moveButtons(list){
+  const a=[];
+  if(view==="trash"){a.push(mvBtn("Restore",()=>moveTo(list,"active")),mvBtn("Delete forever",()=>deleteForever(list)))}
+  else{
+    if(view!=="active")a.push(mvBtn(view==="hidden"?"Unhide":"Restore to inbox",()=>moveTo(list,"active")));
+    if(view!=="hidden")a.push(mvBtn("Hide",()=>moveTo(list,"hidden")));
+    if(view!=="archive")a.push(mvBtn("Archive",()=>moveTo(list,"archive")));
+    a.push(mvBtn("Move to trash",()=>moveTo(list,"trash")));
+  }
+  return a;
+}
+function updateBulk(){
+  const L=items.filter(i=>sel.has(i.id)),b=$("bulk");
+  b.classList.toggle("hide",!L.length);if(!L.length)return;
+  $("bcount").textContent=`${L.length} selected`;
+  const acts=$("bacts");acts.textContent="";
+  if(view==="active")acts.append(mvBtn("Mark as prayed",async()=>{try{await Promise.all(L.map(i=>updateDoc(doc(db,COL,i.id),{prayed:true})));sel.clear();render()}catch(e){console.error(e);alert("Could not update.")}}));
+  moveButtons(L).forEach(x=>acts.append(x));
+  acts.append(mvBtn("Clear",()=>{sel.clear();render()}));
+}
+function purgeOld(){
+  items.forEach(i=>{
+    if(folderOf(i)!=="trash"||purged.has(i.id))return;
+    const t=i.trashedAt?.toDate?i.trashedAt.toDate().getTime():0;
+    if(t&&Date.now()-t>TRASH_DAYS*864e5){purged.add(i.id);deleteDoc(doc(db,COL,i.id)).catch(e=>console.error(e))}
+  });
+}
+$("views").onclick=e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;shown=PAGE;sel.clear();render()};
+$("selBtn").onclick=()=>{const v=items.filter(match),all=v.length&&v.every(i=>sel.has(i.id));v.forEach(i=>all?sel.delete(i.id):sel.add(i.id));render()};
+$("emptyBtn").onclick=()=>deleteForever(items.filter(i=>folderOf(i)==="trash"));
 function render(){
-  const n=items.filter(i=>!i.prayed).length,late=items.filter(isLate).length,urg=items.filter(i=>i.urgent&&!i.prayed).length;
+  const act=items.filter(i=>folderOf(i)==="active");
+  const n=act.filter(i=>!i.prayed).length,late=act.filter(isLate).length,urg=act.filter(i=>i.urgent&&!i.prayed).length;
   const hrs=items.reduce((s,i)=>s+(+i.prayedHours||0),0);
-  $("stat").textContent=`${items.length} total · ${n} not yet prayed · ${urg} urgent · ${late} waiting ${LATE_DAYS}+ days · ${hrs} prayer hours`;
+  $("stat").textContent=`${act.length} in inbox · ${n} not yet prayed · ${urg} urgent · ${late} waiting ${LATE_DAYS}+ days · ${hrs} prayer hours`;
+  Object.keys(FOLDERS).forEach(k=>{const b=$("views").querySelector(`[data-v=${k}]`);b.querySelector(".vc").textContent=items.filter(i=>folderOf(i)===k).length;b.classList.toggle("on",k===view)});
+  $("trashNote").classList.toggle("hide",view!=="trash");$("emptyBtn").classList.toggle("hide",view!=="trash");
+  $("drawBtn").classList.toggle("hide",view!=="active");document.querySelector(".fbox").classList.toggle("hide",view!=="active");
+  purgeOld();
+  const ids=new Set(items.map(i=>i.id));[...sel].forEach(id=>{if(!ids.has(id))sel.delete(id)});
   const v=sorted(items.filter(match));
+  $("selBtn").textContent=v.length&&v.every(i=>sel.has(i.id))?"Clear selection":"Select all";
   const L=$("list");L.textContent="";
-  if(!v.length){L.innerHTML='<div class="empty">No requests here yet.</div>';return}
+  if(!v.length){L.innerHTML='<div class="empty">'+({active:"No requests here yet.",hidden:"No hidden requests.",archive:"The archive is empty.",trash:"The trash is empty."}[view])+'</div>';updateBulk();return}
   v.slice(0,shown).forEach(i=>{
-    const el=document.createElement("article");el.className="item"+(i.prayed?" prayed":"");
+    const el=document.createElement("article");el.className="item"+(i.prayed&&view==="active"?" prayed":"");
     const t=i.createdAt?.toDate?i.createdAt.toDate().toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"Sending…";
-    el.innerHTML='<div class="top"><div class="name"></div><span class="time"></span></div><div class="mail"></div><p></p><input type="text" class="nin" maxlength="300" placeholder="Private note (only admins see this)"><div class="acts" style="flex-wrap:wrap;align-items:center"><button class="btn-g" data-a="p"></button><button class="btn-g" data-a="d">Delete</button></div>';
+    el.innerHTML='<div class="top"><div class="name"></div><span class="time"></span></div><div class="mail"></div><p></p><input type="text" class="nin" maxlength="300" placeholder="Private note (only admins see this)"><div class="acts" style="flex-wrap:wrap;align-items:center"></div>';
     const nm=el.querySelector(".name");nm.textContent=who(i);
+    const cb=document.createElement("input");cb.type="checkbox";cb.className="sel";cb.checked=sel.has(i.id);cb.setAttribute("aria-label","Select this request");
+    cb.onchange=()=>{cb.checked?sel.add(i.id):sel.delete(i.id);updateBulk();$("selBtn").textContent=items.filter(match).every(x=>sel.has(x.id))?"Clear selection":"Select all"};
+    nm.prepend(cb);
     const add=(txt,cls)=>{const b=document.createElement("b");b.className=cls;b.textContent=txt;nm.append(b)};
     add(`Grade ${i.grade}`,"");
     if(i.category)add(i.category,"badge");
     if(i.urgent&&!i.prayed)add("Urgent","badge urg");
     add(i.answered?"Answered":"Not answered","badge "+(i.answered?"ok":"no"));
-    if(isLate(i))add(`Waiting ${waitDays(i)}d`,"badge late");
+    if(isLate(i)&&view==="active")add(`Waiting ${waitDays(i)}d`,"badge late");
     if(i.shareConsent)add(i.onBoard?"On board":"Board consent","badge pub");
+    if(view==="trash"){const td=i.trashedAt?.toDate?i.trashedAt.toDate().getTime():Date.now();add(`Deletes in ${Math.max(0,TRASH_DAYS-Math.floor((Date.now()-td)/864e5))}d`,"badge late")}
     el.querySelector(".time").textContent=t;
     el.querySelector(".mail").textContent=i.email?("✉ "+i.email):"";
     el.querySelector("p").textContent=i.request;
     const ni=el.querySelector(".nin");ni.value=i.note||"";
     ni.onchange=()=>updateDoc(doc(db,COL,i.id),{note:ni.value.trim()}).catch(err=>{console.error(err);alert("Could not save the note.")});
-    const pb=el.querySelector('[data-a=p]');
-    pb.textContent=i.prayed?"Mark as not prayed":"Mark as prayed";
-    pb.onclick=()=>updateDoc(doc(db,COL,i.id),{prayed:!i.prayed});
     const acts=el.querySelector(".acts");
-    const hw=document.createElement("label");hw.className="hrs";
-    hw.append("Prayed for ",hoursSel(i.prayedHours,h=>updateDoc(doc(db,COL,i.id),{prayedHours:h}))," h");
-    acts.append(hw);
-    if(i.shareConsent){
-      const bb=document.createElement("button");bb.className="btn-g";
-      bb.textContent=i.onBoard?"Remove from board":"Publish to board";
-      bb.onclick=()=>i.onBoard?unpublish(i):publish(i);
-      acts.insertBefore(bb,el.querySelector('[data-a=d]'));
+    if(view!=="trash"){
+      acts.append(mvBtn(i.prayed?"Mark as not prayed":"Mark as prayed",()=>updateDoc(doc(db,COL,i.id),{prayed:!i.prayed})));
+      const hw=document.createElement("label");hw.className="hrs";
+      hw.append("Prayed for ",hoursSel(i.prayedHours,h=>updateDoc(doc(db,COL,i.id),{prayedHours:h}))," h");
+      acts.append(hw);
+      if(view==="active"&&i.shareConsent)acts.append(mvBtn(i.onBoard?"Remove from board":"Publish to board",()=>i.onBoard?unpublish(i):publish(i)));
     }
-    el.querySelector('[data-a=d]').onclick=async()=>{
-      if(!confirm("Delete this request permanently?"))return;
-      try{if(i.onBoard)await deleteDoc(doc(db,BOARD,i.id))}catch(e){}
-      deleteDoc(doc(db,COL,i.id));
-    };
+    moveButtons([i]).forEach(x=>acts.append(x));
     L.append(el);
   });
   if(v.length>shown){
     const m=document.createElement("button");m.className="btn-g more";m.textContent=`Show more (${v.length-shown} left)`;
     m.onclick=()=>{shown+=PAGE;render()};L.append(m);
   }
+  updateBulk();
 }
 
 /* ---------- CSV export (admin) ---------- */
@@ -948,8 +1096,8 @@ $("csvBtn").onclick=()=>{
   const v=sorted(items.filter(match));
   if(!v.length)return alert("There are no requests to export.");
   const esc=s=>{s=String(s??"").replace(/\r?\n/g," ");if(/^[=+\-@\t]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
-  const head=["Date","Name","Email","Grade","Topic","Urgent","Request","Prayed","Hours prayed","Answered","Board consent","Note"];
-  const rows=v.map(i=>[i.createdAt?.toDate?i.createdAt.toDate().toISOString():"",who(i),i.email,i.grade,i.category||"",i.urgent?"yes":"no",i.request,i.prayed?"yes":"no",i.prayedHours||0,i.answered?"yes":"no",i.shareConsent?"yes":"no",i.note||""]);
+  const head=["Date","Name","Email","Grade","Topic","Urgent","Request","Prayed","Hours prayed","Answered","Board consent","Note","Folder"];
+  const rows=v.map(i=>[i.createdAt?.toDate?i.createdAt.toDate().toISOString():"",who(i),i.email,i.grade,i.category||"",i.urgent?"yes":"no",i.request,i.prayed?"yes":"no",i.prayedHours||0,i.answered?"yes":"no",i.shareConsent?"yes":"no",i.note||"",FOLDERS[folderOf(i)]]);
   const csv="\ufeff"+[head,...rows].map(r=>r.map(esc).join(",")).join("\r\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
   a.download="prayer-requests-"+new Date().toISOString().slice(0,10)+".csv";document.body.append(a);a.click();a.remove();
@@ -971,7 +1119,7 @@ let purRaf=0;
 const closeDraw=()=>{cancelAnimationFrame(purRaf);dm.classList.add("hide")};
 dm.onclick=e=>{if(e.target===dm)closeDraw()};
 $("drawBtn").onclick=()=>{
-  let pool=items.filter(i=>!i.prayed);if(!pool.length)pool=items.slice();
+  const act=items.filter(i=>folderOf(i)==="active");let pool=act.filter(i=>!i.prayed);if(!pool.length)pool=act;
   if(!pool.length)return alert("There are no requests to draw.");
   const win=pool[Math.floor(Math.random()*pool.length)];
   dm.classList.remove("hide");
