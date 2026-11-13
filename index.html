@@ -152,31 +152,7 @@ body.in .hero>*{animation:rise .9s cubic-bezier(.3,.7,.2,1) both}
 body.in .hero>:nth-child(2){animation-delay:.1s}body.in .hero>:nth-child(3){animation-delay:.2s}body.in .hero>:nth-child(4){animation-delay:.35s}body.in .hero>:nth-child(5){animation-delay:.5s}
 body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
 @media(prefers-reduced-motion:reduce){body.in .hero>*,body.in .card{animation:none}}
-/* ---- added features ---- */
-.chk{display:flex;align-items:center;gap:10px;cursor:pointer;margin:0;font-size:.9rem}
-.chk input{width:18px;height:18px;accent-color:#4a6dbc}
-.note{margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.5}
-.feat{margin-top:28px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.06)}
-.feat small{display:block;font-family:'Geist Mono',monospace;font-size:.72rem;color:#8fb0ea;margin-bottom:8px;letter-spacing:.04em}
-.feat p{line-height:1.65;white-space:pre-wrap;word-break:break-word;color:#fff}
-.tools{display:flex;gap:8px;margin-bottom:14px}
-.fbox{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:18px}
-.fbox textarea{min-height:90px}
-.fbox .acts{margin-top:10px}
-.mail{font-family:'Geist Mono',monospace;font-size:.78rem;color:#9fc3ff;word-break:break-all}
-.badge{font-family:'Geist Mono',monospace;font-size:.7rem;border-radius:6px;padding:3px 8px;margin-left:6px;background:rgba(255,255,255,.1)}
-.badge.ok{background:rgba(80,200,140,.25);color:#b8f2d3}
-.badge.no{background:rgba(255,190,90,.2);color:#ffd9a0}
-.hrs{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
-.hrs select,.modal select{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit}
-.hrs select option,.modal select option{color:#0e1a33}
-.mine{padding:0 0 72px}
-.mine h2{font-size:1.4rem;margin-bottom:14px;letter-spacing:-.02em}
-.modal{position:fixed;inset:0;z-index:90;background:rgba(5,12,30,.75);display:flex;align-items:center;justify-content:center;padding:24px}
-.modal .box{width:min(560px,100%);background:#13244a;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-.modal .shuf{font-family:'Geist Mono',monospace;font-size:1.1rem;text-align:center;padding:36px 0;color:#cfe0ff}
-.modal .pick p{white-space:pre-wrap;line-height:1.65;margin:12px 0}
-.modal .acts{margin-top:16px;flex-wrap:wrap}</style>
+</style>
 </head>
 <body>
 <canvas id="bgw" aria-hidden="true"></canvas>
