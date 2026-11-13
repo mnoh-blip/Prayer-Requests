@@ -754,13 +754,13 @@ const publish=async i=>{
   try{
     await setDoc(doc(db,BOARD,i.id),{text:i.request,uid:i.uid,publishedAt:serverTimestamp()});
     await updateDoc(doc(db,COL,i.id),{onBoard:true});
-  }catch(err){console.error(err);alert("Could not publish. Check your Firestore rules for the prayerBoard collection.")}
+  }catch(err){console.error(err);alert("Could not publish ("+(err.code||err.message)+"). Check your Firestore rules for the prayerBoard collection.")}
 };
 const unpublish=async i=>{
   try{
     await deleteDoc(doc(db,BOARD,i.id));
     await updateDoc(doc(db,COL,i.id),{onBoard:false});
-  }catch(err){console.error(err);alert("Could not remove from the board.")}
+  }catch(err){console.error(err);alert("Could not remove from the board ("+(err.code||err.message)+").")}
 };
 function render(){
   const n=items.filter(i=>!i.prayed).length,late=items.filter(isLate).length;
