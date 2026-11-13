@@ -237,7 +237,11 @@ import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} f
 
 const app=initializeApp({apiKey:"AIzaSyDdaoNHitc3Z3vSrhyv0gmtfMsEACk4vGc",authDomain:"olivet-scheduler.firebaseapp.com",projectId:"olivet-scheduler",storageBucket:"olivet-scheduler.firebasestorage.app",messagingSenderId:"377014643728",appId:"1:377014643728:web:d2a920ea5d9c433e20ae95",measurementId:"G-QEN7Y7E844"});
 const db=getFirestore(app),auth=getAuth(app);
-const ADMIN_EMAIL="mnoh@olivetacademy.org";
+const ADMIN_EMAILS=[
+  "mnoh@olivetacademy.org",
+  "rubyyoon142@gmail.com",
+  "tedtiger1122@gmail.com"
+];
 const $=id=>document.getElementById(id);
 const COL="prayerRequests";
 
@@ -569,7 +573,7 @@ $("auth").onclick=async()=>{
   try{await signInWithPopup(auth,p)}catch(e){if(e.code!=="auth/popup-closed-by-user")alert("Sign-in failed: "+e.message)}
 };
 onAuthStateChanged(auth,u=>{
-  const admin=!!u&&(u.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase();
+  const admin=!!u&&ADMIN_EMAILS.includes((u.email||"").toLowerCase());
   if(u&&!admin){signOut(auth);alert("This account does not have admin access.");return}
   ["tabSubmit","tabInbox","who"].forEach(i=>$(i).classList.toggle("hide",!admin));
   $("auth").textContent=admin?"Sign out":"Admin sign in";
