@@ -152,6 +152,31 @@ body.in .hero>*{animation:rise .9s cubic-bezier(.3,.7,.2,1) both}
 body.in .hero>:nth-child(2){animation-delay:.1s}body.in .hero>:nth-child(3){animation-delay:.2s}body.in .hero>:nth-child(4){animation-delay:.35s}body.in .hero>:nth-child(5){animation-delay:.5s}
 body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
 @media(prefers-reduced-motion:reduce){body.in .hero>*,body.in .card{animation:none}}
+/* ---- added features ---- */
+.chk{display:flex;align-items:center;gap:10px;cursor:pointer;margin:0;font-size:.9rem}
+.chk input{width:18px;height:18px;accent-color:#4a6dbc}
+.note{margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.5}
+.feat{margin-top:28px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.06)}
+.feat small{display:block;font-family:'Geist Mono',monospace;font-size:.72rem;color:#8fb0ea;margin-bottom:8px;letter-spacing:.04em}
+.feat p{line-height:1.65;white-space:pre-wrap;word-break:break-word;color:#fff}
+.tools{display:flex;gap:8px;margin-bottom:14px}
+.fbox{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.fbox textarea{min-height:90px}
+.fbox .acts{margin-top:10px}
+.mail{font-family:'Geist Mono',monospace;font-size:.78rem;color:#9fc3ff;word-break:break-all}
+.badge{font-family:'Geist Mono',monospace;font-size:.7rem;border-radius:6px;padding:3px 8px;margin-left:6px;background:rgba(255,255,255,.1)}
+.badge.ok{background:rgba(80,200,140,.25);color:#b8f2d3}
+.badge.no{background:rgba(255,190,90,.2);color:#ffd9a0}
+.hrs{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+.hrs select,.modal select{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit}
+.hrs select option,.modal select option{color:#0e1a33}
+.mine{padding:0 0 72px}
+.mine h2{font-size:1.4rem;margin-bottom:14px;letter-spacing:-.02em}
+.modal{position:fixed;inset:0;z-index:90;background:rgba(5,12,30,.75);display:flex;align-items:center;justify-content:center;padding:24px}
+.modal .box{width:min(560px,100%);background:#13244a;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal .shuf{font-family:'Geist Mono',monospace;font-size:1.1rem;text-align:center;padding:36px 0;color:#cfe0ff}
+.modal .pick p{white-space:pre-wrap;line-height:1.65;margin:12px 0}
+.modal .acts{margin-top:16px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -177,6 +202,7 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
         <cite>Mark 11:24</cite>
       </blockquote>
       <p class="priv"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a6dbc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Only the Prayer Department can read what you send.</p>
+      <div class="feat hide" id="feat"><small>PRAYER FOCUS</small><p id="featT"></p></div>
     </section>
 
     <section class="card" id="card">
@@ -188,9 +214,11 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
           <div class="f"><label for="ln">Last name</label><input type="text" id="ln" autocomplete="family-name" maxlength="40" required></div>
         </div>
         <fieldset><legend>Grade</legend><div class="grades" id="grades"></div></fieldset>
+        <div class="f"><label class="chk"><input type="checkbox" id="anon"> Send anonymously (your name will be hidden)</label></div>
         <div class="f"><label for="req">Prayer request</label><textarea id="req" maxlength="1000" required></textarea><div class="count"><span id="cnt">0</span> / 1000</div></div>
         <button class="send" id="send" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>Send to Prayer Team</button>
         <p class="msg" id="msg" role="alert"></p>
+        <p class="note">Sending requires a Google sign-in. For safety, the Prayer Department can see the email of the account used, even when you send anonymously.</p>
       </form>
       <div class="done hide" id="done">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a6dbc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12.5 2.8 2.8L16 9.5"/></svg>
@@ -202,6 +230,11 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
   </div>
 </main>
 
+<main id="mine" class="mine hide">
+  <h2>My requests</h2>
+  <div class="list" id="mineList"></div>
+</main>
+
 <main id="inbox" class="hide">
   <div class="ihead">
     <div><h2>Prayer requests</h2><small id="stat"></small></div>
@@ -210,6 +243,12 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
       <button class="btn-g" data-f="new">Not yet prayed</button>
       <button class="btn-g" data-f="done">Prayed</button>
     </div>
+  </div>
+  <div class="tools"><button class="btn-g" id="drawBtn">Draw a request</button></div>
+  <div class="fbox">
+    <label for="ftxt">Featured prayer focus (shown to everyone on the main page)</label>
+    <textarea id="ftxt" maxlength="500"></textarea>
+    <div class="acts"><button class="btn-g" id="fsave">Publish</button><button class="btn-g" id="fclear">Remove</button></div>
   </div>
   <div class="list" id="list"></div>
 </main>
@@ -226,13 +265,17 @@ body.in .card{animation:rise 1s .25s cubic-bezier(.3,.7,.2,1) both}
   <button class="ienter" id="ienter">Enter</button>
 </div>
 
+<div class="modal hide" id="drawM" role="dialog" aria-label="Draw">
+  <div class="box" id="drawBox"></div>
+</div>
+
 <div id="fx" aria-hidden="true">
   <canvas id="sc"></canvas>
 </div>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import {getFirestore,collection,addDoc,serverTimestamp,query,orderBy,onSnapshot,doc,updateDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import {getFirestore,collection,addDoc,serverTimestamp,query,orderBy,onSnapshot,doc,updateDoc,deleteDoc,where,setDoc} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 const app=initializeApp({apiKey:"AIzaSyDdaoNHitc3Z3vSrhyv0gmtfMsEACk4vGc",authDomain:"olivet-scheduler.firebaseapp.com",projectId:"olivet-scheduler",storageBucket:"olivet-scheduler.firebasestorage.app",messagingSenderId:"377014643728",appId:"1:377014643728:web:d2a920ea5d9c433e20ae95",measurementId:"G-QEN7Y7E844"});
@@ -538,19 +581,25 @@ async function fly(name,saved){
 }
 
 /* ---------- submit ---------- */
+let sending=false;
 $("form").addEventListener("submit",async e=>{
   e.preventDefault();
+  const anon=$("anon").checked;
   const fn=$("fn").value.trim(),ln=$("ln").value.trim(),req=$("req").value.trim();
   const g=document.querySelector('input[name=grade]:checked');
   const msg=$("msg");msg.textContent="";
-  if(!fn||!ln)return msg.textContent="Please enter your first and last name.";
+  if(!anon&&(!fn||!ln))return msg.textContent="Please enter your first and last name, or choose anonymous.";
   if(!g)return msg.textContent="Please choose your grade (6–12).";
   if(req.length<3)return msg.textContent="Please write your prayer request.";
-  $("send").disabled=true;
-  const saved=addDoc(collection(db,COL),{firstName:fn,lastName:ln,grade:+g.value,request:req,prayed:false,createdAt:serverTimestamp()});
+  $("send").disabled=true;sending=true;
+  try{
+    if(!auth.currentUser){const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await signInWithPopup(auth,p)}
+  }catch(err){sending=false;$("send").disabled=false;return msg.textContent="Google sign-in is required to send a request."}
+  const u=auth.currentUser;
+  const saved=addDoc(collection(db,COL),{firstName:anon?"":fn,lastName:anon?"":ln,anonymous:anon,uid:u.uid,email:u.email||"",grade:+g.value,request:req,prayed:false,prayedHours:0,answered:false,createdAt:serverTimestamp()});
   saved.catch(()=>{});
   try{
-    await fly(`${fn} ${ln} · Grade ${g.value}`,saved);
+    await fly(`${anon?"Anonymous":fn+" "+ln} · Grade ${g.value}`,saved);
     await saved;
     $("form").classList.add("hide");$("done").classList.remove("hide");
     $("form").reset();$("cnt").textContent="0";
@@ -559,7 +608,7 @@ $("form").addEventListener("submit",async e=>{
     $("fx").style.display="none";stopScene();
     msg.textContent="Your request could not be sent. Please check your connection and try again.";
   }
-  $("send").disabled=false;
+  sending=false;$("send").disabled=false;
 });
 $("again").onclick=()=>{$("done").classList.add("hide");$("form").classList.remove("hide")};
 
@@ -572,14 +621,38 @@ $("auth").onclick=async()=>{
   const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   try{await signInWithPopup(auth,p)}catch(e){if(e.code!=="auth/popup-closed-by-user")alert("Sign-in failed: "+e.message)}
 };
+let unM=null,isAdmin=false;
 onAuthStateChanged(auth,u=>{
   const admin=!!u&&ADMIN_EMAILS.includes((u.email||"").toLowerCase());
-  if(u&&!admin){signOut(auth);alert("This account does not have admin access.");return}
-  ["tabSubmit","tabInbox","who"].forEach(i=>$(i).classList.toggle("hide",!admin));
-  $("auth").textContent=admin?"Sign out":"Admin sign in";
-  if(admin){$("who").textContent=u.email;show("i");listen()}
+  isAdmin=admin;
+  ["tabSubmit","tabInbox"].forEach(i=>$(i).classList.toggle("hide",!admin));
+  $("who").classList.toggle("hide",!u);$("who").textContent=u?u.email:"";
+  $("auth").textContent=u?"Sign out":"Admin sign in";
+  if(admin){if(!sending)show("i");listen()}
   else{if(unsub){unsub();unsub=null}items=[];show("s")}
+  listenMine(u);
 });
+function listenMine(u){
+  if(unM){unM();unM=null}
+  $("mine").classList.toggle("hide",!u);$("mineList").textContent="";
+  if(!u)return;
+  unM=onSnapshot(query(collection(db,COL),where("uid","==",u.uid)),s=>{
+    const a=s.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>(y.createdAt?.seconds||0)-(x.createdAt?.seconds||0));
+    const L=$("mineList");L.textContent="";
+    if(!a.length){L.innerHTML='<div class="empty">You have not sent any requests yet.</div>';return}
+    a.forEach(i=>{
+      const el=document.createElement("article");el.className="item";
+      const t=i.createdAt?.toDate?i.createdAt.toDate().toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"Sending…";
+      el.innerHTML='<div class="top"><div class="name"></div><span class="time"></span></div><p></p><div class="acts"><button class="btn-g"></button></div>';
+      el.querySelector(".name").textContent=i.answered?"Answered":"Not answered yet";
+      el.querySelector(".time").textContent=t;
+      el.querySelector("p").textContent=i.request;
+      const b=el.querySelector("button");b.textContent=i.answered?"Mark as not answered":"Mark as answered";
+      b.onclick=()=>updateDoc(doc(db,COL,i.id),{answered:!i.answered});
+      L.append(el);
+    });
+  },()=>{});
+}
 function listen(){
   if(unsub)unsub();
   unsub=onSnapshot(query(collection(db,COL),orderBy("createdAt","desc")),s=>{
@@ -587,6 +660,13 @@ function listen(){
   },err=>{$("list").innerHTML='<div class="empty">Could not load requests. Check your Firestore rules.</div>';console.error(err)});
 }
 $("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));render()};
+const HRS=[0,.5,1,1.5,2,3,4,5,6,8,10];
+function hoursSel(val,cb){
+  const s=document.createElement("select");
+  s.innerHTML=HRS.map(h=>`<option value="${h}"${h==(val||0)?" selected":""}>${h?h+" h":"—"}</option>`).join("");
+  s.onchange=()=>cb(+s.value);return s;
+}
+const who=i=>i.anonymous?"Anonymous":`${i.firstName} ${i.lastName}`;
 function render(){
   const n=items.filter(i=>!i.prayed).length;
   $("stat").textContent=`${items.length} total · ${n} not yet prayed`;
@@ -596,16 +676,55 @@ function render(){
   v.forEach(i=>{
     const el=document.createElement("article");el.className="item"+(i.prayed?" prayed":"");
     const t=i.createdAt?.toDate?i.createdAt.toDate().toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"Sending…";
-    el.innerHTML='<div class="top"><div class="name"></div><span class="time"></span></div><p></p><div class="acts"><button class="btn-g" data-a="p"></button><button class="btn-g" data-a="d">Delete</button></div>';
-    el.querySelector(".name").textContent=`${i.firstName} ${i.lastName}`;
-    const b=document.createElement("b");b.textContent=`Grade ${i.grade}`;el.querySelector(".name").append(b);
+    el.innerHTML='<div class="top"><div class="name"></div><span class="time"></span></div><div class="mail"></div><p></p><div class="acts"><button class="btn-g" data-a="p"></button><button class="btn-g" data-a="d">Delete</button></div>';
+    const nm=el.querySelector(".name");nm.textContent=who(i);
+    const b=document.createElement("b");b.textContent=`Grade ${i.grade}`;nm.append(b);
+    const ab=document.createElement("b");ab.className="badge "+(i.answered?"ok":"no");ab.textContent=i.answered?"Answered":"Not answered";nm.append(ab);
     el.querySelector(".time").textContent=t;
+    el.querySelector(".mail").textContent=i.email?("✉ "+i.email):"";
     el.querySelector("p").textContent=i.request;
     el.querySelector('[data-a=p]').textContent=i.prayed?"Mark as not prayed":"Mark as prayed";
     el.querySelector('[data-a=p]').onclick=()=>updateDoc(doc(db,COL,i.id),{prayed:!i.prayed});
+    const hw=document.createElement("label");hw.className="hrs";hw.append("Prayed for ",hoursSel(i.prayedHours,h=>updateDoc(doc(db,COL,i.id),{prayedHours:h})));
+    el.querySelector(".acts").append(hw);
     el.querySelector('[data-a=d]').onclick=()=>{if(confirm("Delete this request permanently?"))deleteDoc(doc(db,COL,i.id))};
     L.append(el);
   });
+}
+
+/* ---------- featured prayer focus ---------- */
+onSnapshot(doc(db,"settings","featured"),s=>{
+  const t=(s.exists()&&s.data().text||"").trim();
+  $("feat").classList.toggle("hide",!t);$("featT").textContent=t;
+  if(isAdmin&&document.activeElement!==$("ftxt"))$("ftxt").value=t;
+},()=>{});
+$("fsave").onclick=async()=>{const t=$("ftxt").value.trim();if(!t)return;await setDoc(doc(db,"settings","featured"),{text:t,updatedAt:serverTimestamp()})};
+$("fclear").onclick=async()=>{await setDoc(doc(db,"settings","featured"),{text:"",updatedAt:serverTimestamp()});$("ftxt").value=""};
+
+/* ---------- draw (lottery) ---------- */
+const dm=$("drawM"),dbx=$("drawBox");
+const closeDraw=()=>dm.classList.add("hide");
+dm.onclick=e=>{if(e.target===dm)closeDraw()};
+$("drawBtn").onclick=()=>{
+  let pool=items.filter(i=>!i.prayed);if(!pool.length)pool=items.slice();
+  if(!pool.length)return alert("There are no requests to draw.");
+  dm.classList.remove("hide");
+  dbx.innerHTML='<div class="shuf" id="shuf"></div>';
+  const sh=$("shuf");let k=0;
+  const tick=setInterval(()=>{const r=pool[Math.floor(Math.random()*pool.length)];sh.textContent="🎲  "+who(r)+" · Grade "+r.grade},80);
+  setTimeout(()=>{clearInterval(tick);const a=pool.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}showPick(a[0])},1800);
+};
+function showPick(i){
+  dbx.innerHTML='<div class="pick"><div class="name"></div><div class="mail"></div><p></p><div class="hrs"></div><div class="acts"><button class="btn-g" id="dPray">Mark as prayed</button><button class="btn-g" id="dAgain">Draw again</button><button class="btn-g" id="dClose">Close</button></div></div>';
+  const nm=dbx.querySelector(".name");nm.textContent=who(i);
+  const b=document.createElement("b");b.textContent="Grade "+i.grade;nm.append(b);
+  dbx.querySelector(".mail").textContent=i.email?("✉ "+i.email):"";
+  dbx.querySelector("p").textContent=i.request;
+  let h=i.prayedHours||0;
+  dbx.querySelector(".hrs").append("Prayed for ",hoursSel(h,v=>h=v));
+  $("dPray").onclick=async()=>{await updateDoc(doc(db,COL,i.id),{prayed:true,prayedHours:h});closeDraw()};
+  $("dAgain").onclick=()=>$("drawBtn").onclick();
+  $("dClose").onclick=closeDraw;
 }
 </script>
 </body>
