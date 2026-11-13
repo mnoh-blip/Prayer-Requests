@@ -675,7 +675,7 @@ onAuthStateChanged(auth,u=>{
   isAdmin=admin;
   ["tabSubmit","tabInbox"].forEach(i=>$(i).classList.toggle("hide",!admin));
   $("who").classList.toggle("hide",!u);$("who").textContent=u?u.email:"";
-  $("auth").textContent=u?"Sign out":"sign in";
+  $("auth").textContent=u?"Sign out":"Sign in";
   if(admin){if(!sending)show("i");listen()}
   else{if(unsub){unsub();unsub=null}items=[];show("s")}
   listenMine(u);
