@@ -285,7 +285,7 @@ a.btn-g{text-decoration:none;display:inline-block}
           <div class="f"><label for="fn">First name</label><input type="text" id="fn" autocomplete="given-name" maxlength="40" required></div>
           <div class="f"><label for="ln">Last name</label><input type="text" id="ln" autocomplete="family-name" maxlength="40" required></div>
         </div>
-        <fieldset><legend>Grade</legend><div class="grades" id="grades"></div></fieldset>
+        <fieldset><legend>Grade or role</legend><div class="grades" id="grades"></div><div class="grades cats" id="roles" style="margin-top:8px"></div></fieldset>
         <fieldset><legend>Topic <span style="color:var(--muted);font-weight:400">(optional)</span></legend><div class="grades cats" id="cats"></div></fieldset>
         <div class="f"><label class="chk"><input type="checkbox" id="anon"> Send anonymously (your name will be hidden)</label></div>
         <div class="f"><label class="chk"><input type="checkbox" id="urgent"> This is urgent, please pray as soon as possible</label></div>
@@ -314,27 +314,6 @@ a.btn-g{text-decoration:none;display:inline-block}
     <h2>Prayer Board</h2>
     <p class="bsub">Shared anonymously with permission. Take a moment to pray for each request.</p>
     <div class="bgrid" id="boardList"></div>
-  </section>
-
-  <section class="info" id="how" aria-labelledby="howH">
-    <h2 id="howH">How it works</h2>
-    <div class="bgrid">
-      <article class="bcard"><small class="sn">STEP 1</small><h3>Write your request</h3><p>Tell us your name and grade, pick a topic, and write what is on your heart. You can send it anonymously.</p></article>
-      <article class="bcard"><small class="sn">STEP 2</small><h3>Our team prays</h3><p>The Prayer Department reads every request. Requests marked urgent are looked at first.</p></article>
-      <article class="bcard"><small class="sn">STEP 3</small><h3>Follow along</h3><p>Sign in to see when your request has been prayed for, and mark it as answered whenever God answers.</p></article>
-    </div>
-  </section>
-
-  <section class="info" id="faq" aria-labelledby="faqH">
-    <h2 id="faqH">Frequently asked questions</h2>
-    <div class="faq">
-      <details><summary>Who can see my request?</summary><p>Only the Prayer Department. A request is never shown publicly unless you agree to the Prayer Board, and then only without your name and after it has been reviewed.</p></details>
-      <details><summary>Can I send a request anonymously?</summary><p>Yes. Your name is hidden from the team's list. For safety, the email of the Google account you signed in with is still visible to the Prayer Department.</p></details>
-      <details><summary>Why do I need to sign in with Google?</summary><p>It keeps the form safe from spam and lets you see the status of your own requests later.</p></details>
-      <details><summary>Can I delete or change my request?</summary><p>You can delete a request, withdraw it from the Prayer Board, or mark it as answered anytime from "My requests" after signing in.</p></details>
-      <details><summary>What does "urgent" mean?</summary><p>Use it when you would like the team to pray as soon as possible. It is not for emergencies. If someone is in danger, call 911, or call or text 988 in the US.</p></details>
-      <details><summary>What is the Prayer Board?</summary><p>A public page where reviewed requests are shown without names, so others can pray along. Joining is always optional.</p></details>
-    </div>
   </section>
 </main>
 
@@ -376,6 +355,29 @@ a.btn-g{text-decoration:none;display:inline-block}
     <div class="acts"><button class="btn-g" id="fsave">Publish</button><button class="btn-g" id="fclear">Remove</button></div>
   </div>
   <div class="list" id="list"></div>
+</main>
+
+<main id="infoView">
+  <section class="info" id="how" aria-labelledby="howH">
+    <h2 id="howH">How it works</h2>
+    <div class="bgrid">
+      <article class="bcard"><small class="sn">STEP 1</small><h3>Write your request</h3><p>Tell us your name and grade, pick a topic, and write what is on your heart. You can send it anonymously.</p></article>
+      <article class="bcard"><small class="sn">STEP 2</small><h3>Our team prays</h3><p>The Prayer Department reads every request. Requests marked urgent are looked at first.</p></article>
+      <article class="bcard"><small class="sn">STEP 3</small><h3>Follow along</h3><p>Sign in to see when your request has been prayed for, and mark it as answered whenever God answers.</p></article>
+    </div>
+  </section>
+
+  <section class="info" id="faq" aria-labelledby="faqH">
+    <h2 id="faqH">Frequently asked questions</h2>
+    <div class="faq">
+      <details><summary>Who can see my request?</summary><p>Only the Prayer Department. A request is never shown publicly unless you agree to the Prayer Board, and then only without your name and after it has been reviewed.</p></details>
+      <details><summary>Can I send a request anonymously?</summary><p>Yes. Your name is hidden from the team's list. For safety, the email of the Google account you signed in with is still visible to the Prayer Department.</p></details>
+      <details><summary>Why do I need to sign in with Google?</summary><p>It keeps the form safe from spam and lets you see the status of your own requests later.</p></details>
+      <details><summary>Can I delete or change my request?</summary><p>You can delete a request, withdraw it from the Prayer Board, or mark it as answered anytime from "My requests" after signing in.</p></details>
+      <details><summary>What does "urgent" mean?</summary><p>Use it when you would like the team to pray as soon as possible. It is not for emergencies. If someone is in danger, call 911, or call or text 988 in the US.</p></details>
+      <details><summary>What is the Prayer Board?</summary><p>A public page where reviewed requests are shown without names, so others can pray along. Joining is always optional.</p></details>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -454,6 +456,8 @@ const ADMIN_EMAILS=[
 const $=id=>document.getElementById(id);
 const COL="prayerRequests",BOARD="prayerBoard";
 const LATE_DAYS=3,COOLDOWN_MS=45000,PAGE=30;
+const ROLES=["Pastor","Staff","Missionary","Teacher","College Student","Other"];
+const gl=g=>/^\d+$/.test(g)?"Grade "+g:g;
 const CATS=["Family","Friends","School","Health","Faith","Other"];
 const store={
   get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
@@ -524,8 +528,9 @@ $("yr").textContent=new Date().getFullYear();
 
 /* grades + topics */
 $("grades").innerHTML=[6,7,8,9,10,11,12].map(g=>`<label><input type="radio" name="grade" value="${g}"><span>${g}</span></label>`).join("");
+$("roles").innerHTML=ROLES.map(r=>`<label><input type="radio" name="grade" value="${r}"><span>${r}</span></label>`).join("");
 $("cats").innerHTML=CATS.map(c=>`<label><input type="radio" name="cat" value="${c}"><span>${c}</span></label>`).join("");
-$("gsel").innerHTML='<option value="">All grades</option>'+[6,7,8,9,10,11,12].map(g=>`<option value="${g}">Grade ${g}</option>`).join("");
+$("gsel").innerHTML='<option value="">All grades</option>'+[6,7,8,9,10,11,12].map(g=>`<option value="${g}">Grade ${g}</option>`).join("")+ROLES.map(r=>`<option value="${r}">${r}</option>`).join("");
 $("csel").innerHTML='<option value="">All topics</option>'+CATS.map(c=>`<option value="${c}">${c}</option>`).join("");
 $("req").addEventListener("input",e=>$("cnt").textContent=e.target.value.length);
 
@@ -811,7 +816,7 @@ $("form").addEventListener("submit",async e=>{
   }
   if(!anon&&!fn)return bad($("fn"),"Please enter your first and last name, or choose anonymous.");
   if(!anon&&!ln)return bad($("ln"),"Please enter your first and last name, or choose anonymous.");
-  if(!g)return msg.textContent="Please choose your grade (6–12).";
+  if(!g)return msg.textContent="Please choose your grade or role.";
   if(req.length<3)return bad($("req"),"Please write your prayer request.");
   const wt=COOLDOWN_MS-(Date.now()-store.get("otm_last",0));
   if(wt>0)return msg.textContent=`Please wait ${Math.ceil(wt/1000)} seconds before sending another request.`;
@@ -820,10 +825,10 @@ $("form").addEventListener("submit",async e=>{
     if(!auth.currentUser){const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await signInWithPopup(auth,p)}
   }catch(err){sending=false;$("send").disabled=false;return msg.textContent="Google sign-in is required to send a request."}
   const u=auth.currentUser;
-  const saved=addDoc(collection(db,COL),{firstName:anon?"":fn,lastName:anon?"":ln,anonymous:anon,uid:u.uid,email:u.email||"",grade:+g.value,category:cat?cat.value:"General",urgent,request:req,prayed:false,prayedHours:0,answered:false,shareConsent:share,onBoard:false,note:"",createdAt:serverTimestamp()});
+  const saved=addDoc(collection(db,COL),{firstName:anon?"":fn,lastName:anon?"":ln,anonymous:anon,uid:u.uid,email:u.email||"",grade:/^\d+$/.test(g.value)?+g.value:g.value,category:cat?cat.value:"General",urgent,request:req,prayed:false,prayedHours:0,answered:false,shareConsent:share,onBoard:false,note:"",createdAt:serverTimestamp()});
   saved.catch(()=>{});
   try{
-    await fly(`${anon?"Anonymous":fn+" "+ln} · Grade ${g.value}`,saved);
+    await fly(`${anon?"Anonymous":fn+" "+ln} · ${gl(g.value)}`,saved);
     await saved;
     store.set("otm_last",Date.now());store.del(DRAFT);
     $("form").classList.add("hide");$("done").classList.remove("hide");
@@ -860,7 +865,7 @@ onSnapshot(query(collection(db,BOARD),orderBy("publishedAt","desc"),limit(40)),s
 
 /* ---------- admin ---------- */
 let unsub=null,items=[],filter="all",gradeF="",catF="",sortBy="new",term="",shown=PAGE;
-const show=v=>{$("submitView").classList.toggle("hide",v!=="s");$("inbox").classList.toggle("hide",v!=="i");$("tabSubmit").classList.toggle("on",v==="s");$("tabInbox").classList.toggle("on",v==="i")};
+const show=v=>{$("submitView").classList.toggle("hide",v!=="s");$("infoView").classList.toggle("hide",v!=="s");$("inbox").classList.toggle("hide",v!=="i");$("tabSubmit").classList.toggle("on",v==="s");$("tabInbox").classList.toggle("on",v==="i")};
 $("tabSubmit").onclick=()=>show("s");$("tabInbox").onclick=()=>show("i");
 $("auth").onclick=async()=>{
   if(auth.currentUser){await signOut(auth);return}
@@ -1061,7 +1066,7 @@ function render(){
     cb.onchange=()=>{cb.checked?sel.add(i.id):sel.delete(i.id);updateBulk();$("selBtn").textContent=items.filter(match).every(x=>sel.has(x.id))?"Clear selection":"Select all"};
     nm.prepend(cb);
     const add=(txt,cls)=>{const b=document.createElement("b");b.className=cls;b.textContent=txt;nm.append(b)};
-    add(`Grade ${i.grade}`,"");
+    add(gl(i.grade),"");
     if(i.category)add(i.category,"badge");
     if(i.urgent&&!i.prayed)add("Urgent","badge urg");
     add(i.answered?"Answered":"Not answered","badge "+(i.answered?"ok":"no"));
@@ -1125,7 +1130,7 @@ $("drawBtn").onclick=()=>{
   dm.classList.remove("hide");
   dbx.className="box pur";
   dbx.innerHTML='<canvas id="pur"></canvas><p class="purv">The lot is cast into the lap, but its every decision is from the LORD. · Proverbs 16:33</p><div id="purRes"></div>';
-  castPur($("pur"),who(win)+" · Grade "+win.grade,()=>showPick(win));
+  castPur($("pur"),who(win)+" · "+gl(win.grade),()=>showPick(win));
 };
 
 function castPur(c,label,done){
@@ -1230,7 +1235,7 @@ function showPick(i){
   const res=$("purRes");
   res.innerHTML='<div class="pick"><div class="name"></div><div class="mail"></div><p></p><div class="hrs"></div><div class="acts"><button class="btn-g" id="dPray">Mark as prayed</button><button class="btn-g" id="dAgain">Draw again</button><button class="btn-g" id="dClose">Close</button></div></div>';
   const nm=res.querySelector(".name");nm.textContent=who(i);
-  const b=document.createElement("b");b.textContent="Grade "+i.grade;nm.append(b);
+  const b=document.createElement("b");b.textContent=gl(i.grade);nm.append(b);
   res.querySelector(".mail").textContent=i.email?("✉ "+i.email):"";
   res.querySelector("p").textContent=i.request;
   let h=i.prayedHours||0;
