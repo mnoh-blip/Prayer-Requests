@@ -4,17 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prayer Department · Olivet Teen Mission International</title>
-<meta name="description" content="Send a prayer request to the Olivet Teen Mission International Prayer Department. We reads every request and prays for you.">
+<meta name="description" content="Send a prayer request to the Olivet Teen Mission International Prayer Department. We read every request and pray for you.">
 <meta name="theme-color" content="#13244a">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Prayer Department · Olivet Teen Mission International">
 <meta property="og:description" content="Write down what is on your heart. Prayer Department will read your request and pray for you.">
-<meta name="robots" content="index,follow">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
 <meta name="application-name" content="Prayer Department">
 <meta property="og:site_name" content="Olivet Teen Mission International">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Olivet Teen Mission International","department":{"@type":"Organization","name":"Prayer Department","description":"Receives prayer requests from teens and prays for each one."}}</script>
-<link rel="icon" href="">
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -61,7 +63,7 @@ fieldset{border:0;padding:0;margin:18px 0 0}
 input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff;transition:border-color .15s,box-shadow .15s}
 input[type=text]:focus,textarea:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 4px rgba(74,109,188,.15)}
 textarea{min-height:200px;resize:vertical;line-height:28px;padding-top:10px;background:repeating-linear-gradient(transparent 0 27px,#e6ecf7 27px 28px);background-attachment:local}
-.grades{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .grades input{position:absolute;opacity:0;pointer-events:none}
 .grades span{display:block;text-align:center;padding:10px 0;border:1px solid var(--line);border-radius:10px;font-family:'Geist Mono',monospace;font-size:.9375rem;cursor:pointer;transition:all .15s;margin:0}
 .grades label{margin:0}
@@ -429,7 +431,7 @@ body.locked header,body.locked main,body.locked footer{display:none!important}
     <h2 id="faqH">Frequently asked questions</h2>
     <div class="faq">
       <details><summary>Who can see my request?</summary><p>Only the Prayer Department. A request is never shown publicly unless you agree to the Prayer Board, and then only without your name and after it has been reviewed.</p></details>
-      <details><summary>Can I send a request anonymously?</summary><p>Yes. Your name is hidden from the Prayer Depatment's list. For safety, the email of the Google account you signed in with is still visible to the Prayer Department.</p></details>
+      <details><summary>Can I send a request anonymously?</summary><p>Yes. Your name is hidden from the Prayer Department's list. For safety, the email of the Google account you signed in with is still visible to the Prayer Department.</p></details>
       <details><summary>Why do I need to sign in with Google?</summary><p>It keeps the form safe from spam and lets you see the status of your own requests later.</p></details>
       <details><summary>Can I delete or change my request?</summary><p>You can delete a request, withdraw it from the Prayer Board, or mark it as answered anytime from "My requests" after signing in.</p></details>
       <details><summary>What does "urgent" mean?</summary><p>Use it when you would like the Prayer Department to pray as soon as possible. It is not for emergencies. If someone is in danger, call 911, or call or text 988 in the US.</p></details>
@@ -480,7 +482,7 @@ body.locked header,body.locked main,body.locked footer{display:none!important}
     <h4>Your choices</h4>
     <ul><li>Withdraw Prayer Board consent anytime from "My requests".</li><li>Delete a request you sent anytime from "My requests".</li></ul>
     <h4>Community Board</h4>
-    <p>Posts and comments on the Community Board show your name and can be seen by everyone who has the site password. There is no anonymous posting there.</p>
+    <p>Posts and comments on the Community Board show your name and can be seen by signed-in members who have the site password. There is no anonymous posting there.</p>
     <h4>Safety</h4>
     <p>If someone may be in danger, the Prayer Department may contact a responsible adult. In an emergency call 911, or call or text 988 in the US.</p>
     <div class="acts"><button class="btn-g" id="privClose">Close</button></div>
@@ -527,6 +529,7 @@ const ADMIN_EMAILS=[
   "tedtiger1122@gmail.com"
 ];
 const $=id=>document.getElementById(id);
+if(window.CanvasRenderingContext2D&&!CanvasRenderingContext2D.prototype.roundRect)CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
 const COL="prayerRequests",BOARD="prayerBoard";
 const LATE_DAYS=3,COOLDOWN_MS=45000,PAGE=30;
 const ROLES=["Pastor","Staff","Missionary","Teacher","College Student","Other"];
@@ -654,10 +657,10 @@ $("lockBtn").onclick=()=>{try{sessionStorage.removeItem(UNLOCK_KEY)}catch(e){}lo
 })();
 
 /* grades + topics */
-$("grades").innerHTML=[6,7,8,9,10,11,12].map(g=>`<label><input type="radio" name="grade" value="${g}"><span>${g}</span></label>`).join("");
+$("grades").innerHTML=[9,10,11,12].map(g=>`<label><input type="radio" name="grade" value="${g}"><span>${g}</span></label>`).join("");
 $("roles").innerHTML=ROLES.map(r=>`<label><input type="radio" name="grade" value="${r}"><span>${r}</span></label>`).join("");
 $("cats").innerHTML=CATS.map(c=>`<label><input type="radio" name="cat" value="${c}"><span>${c}</span></label>`).join("");
-$("gsel").innerHTML='<option value="">All grades</option>'+[6,7,8,9,10,11,12].map(g=>`<option value="${g}">Grade ${g}</option>`).join("")+ROLES.map(r=>`<option value="${r}">${r}</option>`).join("");
+$("gsel").innerHTML='<option value="">All grades</option>'+[9,10,11,12].map(g=>`<option value="${g}">Grade ${g}</option>`).join("")+ROLES.map(r=>`<option value="${r}">${r}</option>`).join("");
 $("csel").innerHTML='<option value="">All topics</option>'+CATS.map(c=>`<option value="${c}">${c}</option>`).join("");
 $("req").addEventListener("input",e=>$("cnt").textContent=e.target.value.length);
 
@@ -685,7 +688,7 @@ $("privM").onclick=e=>{if(e.target===$("privM"))$("privM").classList.add("hide")
 $("guideBtn").onclick=()=>$("guideM").classList.remove("hide");
 $("guideClose").onclick=()=>$("guideM").classList.add("hide");
 $("guideM").onclick=e=>{if(e.target===$("guideM"))$("guideM").classList.add("hide")};
-addEventListener("keydown",e=>{if(e.key==="Escape"){$("privM").classList.add("hide");$("guideM").classList.add("hide")}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){$("privM").classList.add("hide");$("guideM").classList.add("hide");if(!$("drawM").classList.contains("hide"))closeDraw()}});
 $("topBtn").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 $("shareBtn").onclick=async()=>{
   const d={title:document.title,text:"Send a prayer request to the Prayer Department.",url:location.href.split("#")[0]};
@@ -701,6 +704,7 @@ function toast(text,undo){
 
 /* ---------- paper plane: fold, then fly over sea and sky ---------- */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),ms))]);
 const anim=(el,kf,o)=>el.animate(kf,{fill:"forwards",easing:"cubic-bezier(.5,0,.2,1)",...o}).finished;
 const sc={c:$("sc"),raf:0,tm:0,last:0,fl:null,trail:[],rip:[],ripT:0,roll:0,pa:0,pl:null};
 const cx=sc.c.getContext("2d");
@@ -952,7 +956,7 @@ $("form").addEventListener("submit",async e=>{
     if(!auth.currentUser){const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await signInWithPopup(auth,p)}
   }catch(err){sending=false;$("send").disabled=false;return msg.textContent="Google sign-in is required to send a request."}
   const u=auth.currentUser;
-  const saved=addDoc(collection(db,COL),{firstName:anon?"":fn,lastName:anon?"":ln,anonymous:anon,uid:u.uid,email:u.email||"",grade:/^\d+$/.test(g.value)?+g.value:g.value,category:cat?cat.value:"General",urgent,request:req,prayed:false,prayedHours:0,answered:false,shareConsent:share,onBoard:false,note:"",createdAt:serverTimestamp()});
+  const saved=withTimeout(addDoc(collection(db,COL),{firstName:anon?"":fn,lastName:anon?"":ln,anonymous:anon,uid:u.uid,email:u.email||"",grade:/^\d+$/.test(g.value)?+g.value:g.value,category:cat?cat.value:"General",urgent,request:req,prayed:false,prayedHours:0,answered:false,shareConsent:share,onBoard:false,note:"",createdAt:serverTimestamp()}),20000);
   saved.catch(()=>{});
   try{
     await fly(`${anon?"Anonymous":fn+" "+ln} · ${gl(g.value)}`,saved);
@@ -998,13 +1002,13 @@ const show=v=>{curView=v;$("submitView").classList.toggle("hide",v!=="s");$("inf
 $("tabSubmit").onclick=()=>show("s");$("tabInbox").onclick=()=>show("i");$("tabComm").onclick=()=>show("c");
 document.querySelectorAll("a.navl").forEach(a=>a.addEventListener("click",e=>{if(curView==="s")return;e.preventDefault();show("s");const t=document.querySelector(a.getAttribute("href"));t&&t.scrollIntoView()}));
 $("auth").onclick=async()=>{
-  if(auth.currentUser){await signOut(auth);return}
+  if(auth.currentUser){store.del(DRAFT);await signOut(auth);return}
   const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   try{await signInWithPopup(auth,p)}catch(e){if(e.code!=="auth/popup-closed-by-user")alert("Sign-in failed: "+e.message)}
 };
 let unM=null,isAdmin=false;
 onAuthStateChanged(auth,u=>{
-  const admin=!!u&&ADMIN_EMAILS.includes((u.email||"").toLowerCase());
+  const admin=!!u&&u.emailVerified===true&&ADMIN_EMAILS.includes((u.email||"").toLowerCase());
   isAdmin=admin;
   $("tabInbox").classList.toggle("hide",!admin);
   $("who").classList.toggle("hide",!u);$("who").textContent=u?u.email:"";
@@ -1111,7 +1115,7 @@ const sorted=a=>{
 };
 const publish=async i=>{
   try{
-    await setDoc(doc(db,BOARD,i.id),{text:i.request,uid:i.uid,prayCount:0,publishedAt:serverTimestamp()});
+    await setDoc(doc(db,BOARD,i.id),{text:i.request,prayCount:0,publishedAt:serverTimestamp()});
     await updateDoc(doc(db,COL,i.id),{onBoard:true});
   }catch(err){console.error(err);alert("Could not publish ("+(err.code||err.message)+"). Check your Firestore rules for the prayerBoard collection.")}
 };
@@ -1156,7 +1160,7 @@ function moveButtons(list){
   return a;
 }
 function updateBulk(){
-  const L=items.filter(i=>sel.has(i.id)),b=$("bulk");
+  const L=items.filter(i=>sel.has(i.id)&&match(i)),b=$("bulk");
   b.classList.toggle("hide",!L.length);if(!L.length)return;
   $("bcount").textContent=`${L.length} selected`;
   const acts=$("bacts");acts.textContent="";
@@ -1183,7 +1187,7 @@ function render(){
   $("trashNote").classList.toggle("hide",view!=="trash");$("emptyBtn").classList.toggle("hide",view!=="trash");
   $("drawBtn").classList.toggle("hide",view!=="active");document.querySelector(".fbox").classList.toggle("hide",view!=="active");
   purgeOld();
-  const ids=new Set(items.map(i=>i.id));[...sel].forEach(id=>{if(!ids.has(id))sel.delete(id)});
+  const vis=new Set(items.filter(match).map(i=>i.id));[...sel].forEach(id=>{if(!vis.has(id))sel.delete(id)});
   const v=sorted(items.filter(match));
   $("selBtn").textContent=v.length&&v.every(i=>sel.has(i.id))?"Clear selection":"Select all";
   const L=$("list");L.textContent="";
@@ -1231,7 +1235,7 @@ function render(){
 $("csvBtn").onclick=()=>{
   const v=sorted(items.filter(match));
   if(!v.length)return alert("There are no requests to export.");
-  const esc=s=>{s=String(s??"").replace(/\r?\n/g," ");if(/^[=+\-@\t]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
+  const esc=s=>{s=String(s??"").replace(/\r?\n/g," ");if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
   const head=["Date","Name","Email","Grade","Topic","Urgent","Request","Prayed","Hours prayed","Answered","Board consent","Note","Folder"];
   const rows=v.map(i=>[i.createdAt?.toDate?i.createdAt.toDate().toISOString():"",who(i),i.email,i.grade,i.category||"",i.urgent?"yes":"no",i.request,i.prayed?"yes":"no",i.prayedHours||0,i.answered?"yes":"no",i.shareConsent?"yes":"no",i.note||"",FOLDERS[folderOf(i)]]);
   const csv="\ufeff"+[head,...rows].map(r=>r.map(esc).join(",")).join("\r\n");
@@ -1371,7 +1375,7 @@ function showPick(i){
   res.querySelector("p").textContent=i.request;
   let h=i.prayedHours||0;
   res.querySelector(".hrs").append("Prayed for ",hoursSel(h,v=>h=v)," h");
-  $("dPray").onclick=async()=>{await updateDoc(doc(db,COL,i.id),{prayed:true,prayedHours:h});closeDraw()};
+  $("dPray").onclick=async()=>{try{await updateDoc(doc(db,COL,i.id),{prayed:true,prayedHours:h});closeDraw()}catch(e){console.error(e);alert("Could not update. Please try again.")}};
   $("dAgain").onclick=()=>$("drawBtn").onclick();
   $("dClose").onclick=closeDraw;
 }
@@ -1402,6 +1406,7 @@ function refreshBoardAuth(){
 function startBoard(){
   if(!unlocked)return;
   if(unPosts){unPosts();unPosts=null}
+  if(!auth.currentUser){if(openId)closePost();posts=[];renderPosts();return}
   unPosts=onSnapshot(query(collection(db,POSTS),orderBy("createdAt","desc"),limit(100)),s=>{
     posts=s.docs.map(d=>({id:d.id,...d.data()}));
     if(openId&&!posts.some(p=>p.id===openId)){closePost();toast("This post was deleted")}
@@ -1419,6 +1424,7 @@ function postCard(p){
 }
 function renderPosts(){
   const L=$("postList");L.textContent="";
+  if(!auth.currentUser){const d=hel("div","empty","Sign in with Google to view the Community Board. ");const sb=hel("button","btn-g","Sign in");sb.type="button";sb.onclick=()=>ensureAuth();d.append(sb);L.append(d);return}
   const v=posts.filter(p=>!postTerm||((p.title||"")+" "+(p.body||"")+" "+(p.authorName||"")).toLowerCase().includes(postTerm));
   if(!v.length){L.append(hel("div","empty",posts.length?"No posts match your search.":"No posts yet. Be the first to write one."));return}
   v.slice(0,postShown).forEach(p=>L.append(postCard(p)));
